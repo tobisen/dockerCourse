@@ -24,6 +24,18 @@ export type FlashcardSet = {
   status: 'Ready' | 'Coming soon'
 }
 
+export type Exercise = {
+  id: string
+  title: string
+  goal: string
+  prompt: string
+  steps: string[]
+  example: string[]
+  expected: string[]
+  answer: string[]
+  mistakes: string[]
+}
+
 export const courseName = 'Cloud Native with Docker, Kubernetes and Azure'
 
 export const lessons: Lesson[] = [
@@ -322,6 +334,264 @@ export const lesson1Flashcards: Flashcard[] = [
       'Kubernetes bygger images och Docker bara skriver dokumentation.',
       'Docker ersätter alltid behovet av Kubernetes.',
       'Kubernetes används bara för att göra Dockerfile enklare.',
+    ],
+  },
+]
+
+export const lesson1Exercises: Exercise[] = [
+  {
+    id: 'build-and-run',
+    title: 'Bygg och kör en image',
+    goal: 'Träna på hela flödet från Dockerfile till körbar container.',
+    prompt:
+      'Skapa en enkel Dockerfile för en valfri app eller använd kursens exempel, bygg imagen med `docker build -t myapp .` och kör den med `docker run --rm myapp`.',
+    steps: [
+      'Öppna terminalen i mappen där din Dockerfile ligger.',
+      'Bygg imagen med `docker build -t myapp .`.',
+      'Kontrollera att imagen finns med `docker images` eller `docker image ls`.',
+      'Starta containern med `docker run --rm myapp`.',
+    ],
+    example: [
+      'Om du använder kursens exempelprojekt kan du ofta bygga direkt från projektets rotmapp.',
+      '`-t myapp` ger imagen ett namn så att den blir lätt att köra senare.',
+      '`--rm` gör att containern tas bort automatiskt när den stängs ner.',
+      'Om appen behöver interaktiv shell: `docker run -it --rm myapp sh`.',
+    ],
+    expected: [
+      'Du ska se att Docker bygger flera steg och slutar med att imagen skapas.',
+      'När du kör containern ska du antingen se appens output eller hamna i ett shell.',
+    ],
+    answer: [
+      'Facit: `docker build` skapar en image från din Dockerfile.',
+      'Facit: `docker run` startar en container från imagen.',
+      'Om containern avslutas direkt kan du kontrollera den med `docker ps -a`.',
+    ],
+    mistakes: [
+      'Du kör kommandot i fel mapp och Docker hittar inte din Dockerfile.',
+      'Du glömmer `.` i slutet av `docker build`, vilket betyder att build-kontexten saknas.',
+      'Du tror att image och container är samma sak. Imagen är mallen, containern är en körning av mallen.',
+    ],
+  },
+  {
+    id: 'inspect-container',
+    title: 'Inspektera en container',
+    goal: 'Lär dig läsa status, portar och loggar.',
+    prompt:
+      'Starta en container i bakgrunden, kör `docker ps`, `docker logs <container>`, `docker inspect <container>` och förklara vad du ser i outputen.',
+    steps: [
+      'Starta en enkel container, till exempel `docker run -d --name demo nginx`.',
+      'Kolla att den körs med `docker ps`.',
+      'Läs loggarna med `docker logs demo`.',
+      'Titta på detaljer med `docker inspect demo`.',
+    ],
+    example: [
+      'Använd ett enkelt image som `nginx` eller den image du just byggde.',
+      'Flaggan `-d` betyder att containern kör i bakgrunden.',
+      'Namnet `demo` gör det lättare att hänvisa till containern än att använda ett långt ID.',
+    ],
+    expected: [
+      'I `docker ps` ska du se container-ID, image, namn, status och portar.',
+      'I `docker logs` ska du se text som containern skriver till stdout/stderr.',
+      'I `docker inspect` får du en stor JSON med all teknisk information.',
+    ],
+    answer: [
+      'Facit: `docker ps` visar vilka containers som kör just nu.',
+      'Facit: `docker logs demo` visar loggutdata från containern.',
+      'Facit: `docker inspect demo` visar detaljer som nätverk, mounts, environment och startkommando.',
+    ],
+    mistakes: [
+      'Du försöker läsa loggar från fel namn eller fel container-ID.',
+      'Containern har redan stannat, så `docker ps` visar ingenting. Prova `docker ps -a`.',
+      'Du letar efter en kort sammanfattning i `docker inspect`, men den ger en väldigt detaljerad JSON.',
+    ],
+  },
+  {
+    id: 'ports-and-env',
+    title: 'Port mapping och miljövariabler',
+    goal: 'Öva på vanliga runtime-flaggor.',
+    prompt:
+      'Kör containern med `-p 8080:8080` och minst en miljövariabel med `-e`. Testa sedan att nå appen via browser eller `curl`.',
+    steps: [
+      'Starta containern med port mapping, till exempel `docker run -d --name web -p 8080:8080 -e APP_ENV=dev myapp`.',
+      'Öppna webbläsaren på `http://localhost:8080` eller kör `curl http://localhost:8080`.',
+      'Kolla environment med `docker inspect web` om du vill se att variabeln verkligen skickades in.',
+    ],
+    example: [
+      '`-p 8080:8080` betyder port 8080 på datorn till port 8080 i containern.',
+      '`-e APP_ENV=dev` skickar in en miljövariabel i containern.',
+      'Många webbappar lyssnar på port 8080, men ibland är det 80 eller 3000 i stället.',
+    ],
+    expected: [
+      'Du ska kunna nå tjänsten via din lokala dator på den port du mappat.',
+      'Om appen loggar sin miljövariabel ska du se värdet `dev` i outputen.',
+    ],
+    answer: [
+      'Facit: port mapping gör att trafik på din dator skickas vidare in i containern.',
+      'Facit: miljövariabeln kan verifieras med `docker inspect web` under `Config.Env`.',
+      'Om appen inte svarar kan det vara för att den lyssnar på en annan port än du mappade.',
+    ],
+    mistakes: [
+      'Du blandar ihop host-port och container-port i `-p`.',
+      'Du startar appen på en port som inte matchar det du exponerat.',
+      'Du glömmer att appen måste lyssna på alla interfaces, inte bara `localhost`, inne i containern.',
+    ],
+  },
+  {
+    id: 'tag-and-push',
+    title: 'Tagga och push:a en image',
+    goal: 'Träna på flödet till registry.',
+    prompt:
+      'Tagga din image med ett registry-namn, till exempel `docker tag myapp user/myapp:1.0`, och förklara vad som händer innan du kör `docker push`.',
+    steps: [
+      'Kontrollera först vilken image du vill tagga med `docker images`.',
+      'Skapa en ny tagg med `docker tag myapp user/myapp:1.0`.',
+      'Logga in i registry om det behövs, till exempel med `docker login`.',
+      'Pusha imagen med `docker push user/myapp:1.0`.',
+    ],
+    example: [
+      'Taggning ändrar inte innehållet i imagen, den skapar bara en ny etikett.',
+      'Det är vanligt att använda formatet `användarnamn/imagenamn:version`.',
+      'Om du kör mot Docker Hub behöver du ofta logga in innan push.',
+    ],
+    expected: [
+      'Efter taggning ska samma image finnas under två namn.',
+      'Efter push ska registry ta emot imagen och spara den där.',
+    ],
+    answer: [
+      'Facit: `docker tag` skapar en ny referens till samma image, inte en ny byggd image.',
+      'Facit: `docker push` laddar upp imagen till registry, förutsatt att du är inloggad och har rättigheter.',
+      'Om push misslyckas beror det ofta på fel namnformat eller att du inte är inloggad.',
+    ],
+    mistakes: [
+      'Du tror att taggning bygger om imagen. Det gör den inte.',
+      'Du glömmer registry-prefixet när du pushar.',
+      'Du försöker pusha utan att vara inloggad.',
+    ],
+  },
+  {
+    id: 'stop-and-cleanup',
+    title: 'Stoppa och städa upp containers',
+    goal: 'Bli trygg med livscykeln för en container.',
+    prompt:
+      'Starta en container, stoppa den och ta bort den igen. Förklara skillnaden mellan att stoppa och att radera.',
+    steps: [
+      'Starta en container med ett namn, till exempel `docker run -d --name temp nginx`.',
+      'Stoppa den med `docker stop temp`.',
+      'Titta på listan med `docker ps -a`.',
+      'Ta bort containern med `docker rm temp`.',
+    ],
+    example: [
+      'Om du vill ta bort en container direkt när den avslutas kan du ofta använda `--rm` när du kör den.',
+      'När en container stoppas finns den kvar i listan över tidigare containers.',
+      'När den raderas försvinner själva containern, men imagen finns kvar.',
+    ],
+    expected: [
+      'Efter `docker stop` ska containern inte längre köras.',
+      'Efter `docker rm` ska den inte längre finnas kvar i `docker ps -a`.',
+    ],
+    answer: [
+      'Facit: `docker stop` stoppar processen i containern.',
+      'Facit: `docker rm` tar bort containern helt.',
+      'Det är vanligt att först stoppa och sedan ta bort, men en stoppad container kan inte startas igen om du har raderat den.',
+    ],
+    mistakes: [
+      'Du försöker köra `docker rm` på en container som fortfarande körs.',
+      'Du blandar ihop att ta bort en container med att ta bort en image.',
+      'Du glömmer att använda `docker ps -a` och tror att containern försvann bara för att den inte körs längre.',
+    ],
+  },
+  {
+    id: 'interactive-shell',
+    title: 'Öppna ett shell i en container',
+    goal: 'Öva på interaktivt läge och hur man felsöker inifrån containern.',
+    prompt:
+      'Kör en container med `-it` och öppna ett shell. Testa några enkla kommandon och lämna sedan containern.',
+    steps: [
+      'Starta containern med `docker run -it --rm alpine sh` eller ett annat litet image.',
+      'Skriv `pwd`, `ls` och `exit` i shell:et.',
+      'Jämför vad du ser inne i containern med vad du ser i din vanliga terminal.',
+    ],
+    example: [
+      '`-i` betyder att terminalen är interaktiv.',
+      '`-t` ger en terminalliknande upplevelse så att shell:et fungerar normalt.',
+      'Ett litet image som `alpine` är bra för att öva eftersom det startar snabbt.',
+    ],
+    expected: [
+      'Du ska hamna i ett shell där prompten ser annorlunda ut än normalt.',
+      'När du skriver `exit` stängs sessionen och containern avslutas om den inte kör något annat.',
+    ],
+    answer: [
+      'Facit: `-it` används när du vill prata direkt med containern.',
+      'Facit: `docker run -it --rm alpine sh` är ett vanligt nybörjarexempel.',
+      'Du behöver inte kunna alla Linux-kommandon för att klara övningen, men `pwd`, `ls` och `exit` räcker långt.',
+    ],
+    mistakes: [
+      'Du glömmer `sh` eller `bash` och får ingen shell-session.',
+      'Du försöker köra interaktivt på ett image som inte har något shell installerat.',
+      'Du blandar ihop din vanliga terminal med terminalen inne i containern.',
+    ],
+  },
+  {
+    id: 'pull-and-run',
+    title: 'Hämta en image från registry',
+    goal: 'Förstå hur `docker pull` och `docker run` hänger ihop.',
+    prompt:
+      'Hämta ett image från registry och kör det. Förklara vad som sker om imagen inte redan finns lokalt.',
+    steps: [
+      'Testa först `docker images` och se vilka images som redan finns lokalt.',
+      'Kör `docker pull nginx` eller ett annat valfritt image.',
+      'Starta sedan containern med `docker run -d --name web nginx`.',
+      'Jämför skillnaden mellan att bara köra `docker run` och att först köra `docker pull`.',
+    ],
+    example: [
+      'Om imagen inte finns lokalt brukar `docker run` själv hämta den åt dig.',
+      '`docker pull` är bra när du vill ladda ner image i förväg.',
+      'Det här är ett bra sätt att förstå att registry är lagringsplatsen för images.',
+    ],
+    expected: [
+      'Efter pull ska imagen finnas i din lokala image-lista.',
+      'Efter run ska containern synas i `docker ps` om den körs i bakgrunden.',
+    ],
+    answer: [
+      'Facit: `docker pull` hämtar en image från registry till din dator.',
+      'Facit: `docker run` startar en container från imagen, och kan samtidigt hämta imagen om den saknas.',
+      'Det är därför `pull` och `run` ofta känns som två steg i samma flöde.',
+    ],
+    mistakes: [
+      'Du tror att `docker pull` startar en container. Det gör den inte.',
+      'Du tror att `docker run` alltid kräver att imagen redan finns lokalt. Ofta hämtar Docker den automatiskt.',
+      'Du blandar ihop registry med container runtime.',
+    ],
+  },
+  {
+    id: 'volumes-intro',
+    title: 'Testa volymer grundläggande',
+    goal: 'Få en första känsla för hur data kan överleva en container.',
+    prompt:
+      'Kör en container med en volym och förklara varför en volym är användbar när containern stängs ner.',
+    steps: [
+      'Starta en container med en volym, till exempel `docker run -d --name data -v mydata:/data alpine sleep 3600`.',
+      'Koppla upp dig i containern med `docker exec -it data sh`.',
+      'Skapa en fil i `/data` och kontrollera att den finns kvar efter att du startar om containern.',
+    ],
+    example: [
+      '`-v mydata:/data` skapar eller återanvänder en namngiven volym.',
+      'Volymer används ofta för databaser och annan information som inte får försvinna när containern tas bort.',
+      'Du behöver inte förstå allt om filsystem direkt för att komma igång, det viktiga är att data kan lagras utanför containern.',
+    ],
+    expected: [
+      'Data i volymen ska finnas kvar även om containern tas bort och skapas igen.',
+      'Du ska kunna se volymen med `docker volume ls`.',
+    ],
+    answer: [
+      'Facit: volymer är det vanliga sättet att spara data som ska överleva container-livscykeln.',
+      'Facit: containern är tillfällig, volymen är den beständiga lagringen.',
+      'Om du tar bort containern med `docker rm` ska volymen ändå kunna vara kvar.',
+    ],
+    mistakes: [
+      'Du tror att data som skrivs i containern alltid sparas permanent.',
+      'Du blandar ihop bind mounts och named volumes utan att veta att de löser olika behov.',
+      'Du tar bort containern och blir förvånad över att data försvinner när du inte använde volym.',
     ],
   },
 ]

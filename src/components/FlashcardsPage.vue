@@ -51,9 +51,14 @@ function resetChoice() {
 
     <section class="content-grid lesson-page">
       <div class="section-heading">
-        <RouterLink :to="`/lektion/${lessonId}`" class="page-link-button">
-          Till lektionssidan
-        </RouterLink>
+        <div class="lesson-action-row">
+          <RouterLink :to="`/lektion/${lessonId}`" class="page-link-button">
+            Till lektionssidan
+          </RouterLink>
+          <RouterLink :to="`/lektion/${lessonId}/ovningar`" class="page-link-button">
+            Övningar
+          </RouterLink>
+        </div>
         <h2>Flashcards för {{ lesson?.title ?? `Lektion ${lessonId}` }}</h2>
         <p>
           Här kan du plugga lektionen med ett kort i taget. Välj ett svar, se facit direkt och
