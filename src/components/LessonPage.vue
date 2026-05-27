@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { courseName, lessons, lesson1Topics } from '../data/course'
+import { courseName, lessons, lesson1Topics, lesson2Topics } from '../data/course'
 
 const route = useRoute()
 
@@ -9,7 +9,12 @@ const lessonId = computed(() => Number(route.params.id))
 const lesson = computed(() => lessons.find((item) => item.id === lessonId.value))
 const lessonNumber = computed(() => lessonId.value)
 const isLesson1 = computed(() => lessonId.value === 1)
-const topics = computed(() => (isLesson1.value ? lesson1Topics : []))
+const isLesson2 = computed(() => lessonId.value === 2)
+const topics = computed(() => {
+  if (isLesson1.value) return lesson1Topics
+  if (isLesson2.value) return lesson2Topics
+  return []
+})
 
 const lesson1Resources = [
   {
@@ -23,6 +28,20 @@ const lesson1Resources = [
     description: 'Källkod och exempelprojekt för övningarna.',
   },
 ]
+
+const lesson2Resources = [
+  {
+    label: 'Day 2 - Docker.pptx',
+    href: '/lesson-material/Day 2 - Docker.pptx',
+    description: 'Powerpointen för lektion 2.',
+  },
+]
+
+const resources = computed(() => {
+  if (isLesson1.value) return lesson1Resources
+  if (isLesson2.value) return lesson2Resources
+  return []
+})
 </script>
 
 <template>
@@ -52,20 +71,20 @@ const lesson1Resources = [
         </article>
         <article class="info-card">
           <h3>Status</h3>
-          <p>{{ isLesson1 ? 'Färdig att plugga' : 'Kommer fyllas på' }}</p>
+          <p>{{ isLesson1 || isLesson2 ? 'Färdig att plugga' : 'Kommer fyllas på' }}</p>
         </article>
       </div>
 
-      <div v-if="isLesson1" class="lesson-summary">
+      <div v-if="isLesson1 || isLesson2" class="lesson-summary">
         <div class="lesson-resources">
           <div class="section-heading compact">
             <h3>Resurser</h3>
-            <p>Här finns filerna som hör till lektion 1.</p>
+            <p>Här finns filerna som hör till {{ lesson?.title ?? `Lektion ${lessonNumber}` }}.</p>
           </div>
 
           <div class="resource-list">
             <a
-              v-for="resource in lesson1Resources"
+              v-for="resource in resources"
               :key="resource.label"
               :href="resource.href"
               class="resource-link"
@@ -78,7 +97,7 @@ const lesson1Resources = [
         </div>
 
         <div class="section-heading compact">
-          <p class="eyebrow">Lektion 1</p>
+          <p class="eyebrow">{{ lesson?.title ?? `Lektion ${lessonNumber}` }}</p>
           <h3>Snabb överblick</h3>
           <p>Här är innehållet uppdelat i korta delar så det blir lätt att skumma och repetera.</p>
         </div>

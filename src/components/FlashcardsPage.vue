@@ -1,45 +1,60 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { courseName, lessons, lesson1Flashcards } from '../data/course'
+import { shuffleArray } from '../utils/shuffle'
 
 const route = useRoute()
 
 const lessonId = computed(() => Number(route.params.id))
 const lesson = computed(() => lessons.find((item) => item.id === lessonId.value))
 const isLesson1 = computed(() => lessonId.value === 1)
-const flashcards = computed(() => (isLesson1.value ? lesson1Flashcards : []))
+const sourceFlashcards = computed(() => (isLesson1.value ? lesson1Flashcards : []))
+const flashcards = ref<typeof lesson1Flashcards>([])
+const selectedOptions = ref<(number | null)[]>([])
 
 const activeIndex = ref(0)
-const selectedOption = ref<number | null>(null)
-const revealedAnswer = ref(false)
 
 const activeFlashcard = computed(() => flashcards.value[activeIndex.value])
+const activeSelectedOption = computed(() => selectedOptions.value[activeIndex.value] ?? null)
 const isSelectedCorrect = computed(() => {
-  if (selectedOption.value === null) return false
-  return activeFlashcard.value.options[selectedOption.value] === activeFlashcard.value.answer
+  if (activeSelectedOption.value === null) return false
+  return activeFlashcard.value.options[activeSelectedOption.value] === activeFlashcard.value.answer
 })
+const correctCount = computed(() =>
+  flashcards.value.reduce((count, card, index) => {
+    const selectedOption = selectedOptions.value[index]
+    return count + (selectedOption !== null && card.options[selectedOption] === card.answer ? 1 : 0)
+  }, 0),
+)
+
+function resetFlashcards() {
+  flashcards.value = shuffleArray(
+    sourceFlashcards.value.map((card) => ({
+      ...card,
+      options: shuffleArray(card.options),
+    })),
+  )
+  selectedOptions.value = flashcards.value.map(() => null)
+  activeIndex.value = 0
+}
+
+watch(sourceFlashcards, resetFlashcards, { immediate: true })
 
 function nextCard() {
   activeIndex.value = (activeIndex.value + 1) % flashcards.value.length
-  selectedOption.value = null
-  revealedAnswer.value = false
 }
 
 function previousCard() {
   activeIndex.value = (activeIndex.value - 1 + flashcards.value.length) % flashcards.value.length
-  selectedOption.value = null
-  revealedAnswer.value = false
 }
 
 function chooseOption(index: number) {
-  selectedOption.value = index
-  revealedAnswer.value = true
+  selectedOptions.value[activeIndex.value] = index
 }
 
 function resetChoice() {
-  selectedOption.value = null
-  revealedAnswer.value = false
+  selectedOptions.value[activeIndex.value] = null
 }
 </script>
 
@@ -78,11 +93,11 @@ function resetChoice() {
                   :key="option"
                   class="option-button"
                   :class="{
-                    selected: selectedOption === index,
-                    correct: revealedAnswer && option === activeFlashcard.answer,
+                    selected: activeSelectedOption === index,
+                    correct: activeSelectedOption !== null && option === activeFlashcard.answer,
                     incorrect:
-                      revealedAnswer &&
-                      selectedOption === index &&
+                      activeSelectedOption !== null &&
+                      activeSelectedOption === index &&
                       option !== activeFlashcard.answer,
                   }"
                   @click="chooseOption(index)"
@@ -92,7 +107,7 @@ function resetChoice() {
                 </button>
               </div>
 
-              <p v-if="revealedAnswer" class="answer-feedback" :class="{ correct: isSelectedCorrect }">
+              <p v-if="activeSelectedOption !== null" class="answer-feedback" :class="{ correct: isSelectedCorrect }">
                 Rätt svar är: {{ activeFlashcard.answer }}
               </p>
             </div>
@@ -114,6 +129,14 @@ function resetChoice() {
           <div class="section-heading compact">
             <h3>Vad du tränar på</h3>
             <p>Det här setet täcker grunderna från Lektion 1 och är byggt för snabb repetition.</p>
+          </div>
+
+          <div class="info-card flashcard-score-card">
+            <h3>Din poäng</h3>
+            <p>{{ correctCount }} / {{ flashcards.length }} rätt</p>
+            <p class="flashcard-score-note">
+              Poängen nollställs när du öppnar flashcards igen.
+            </p>
           </div>
 
           <div class="set-list">

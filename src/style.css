@@ -394,6 +394,38 @@ a {
   background: var(--surface-strong);
 }
 
+.quiz-card {
+  gap: 16px;
+}
+
+.quiz-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.quiz-list {
+  display: grid;
+  gap: 18px;
+}
+
+.quiz-item {
+  display: grid;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.quiz-question {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.quiz-options {
+  margin-top: 0;
+}
+
 .help-list {
   margin: 0;
   padding-left: 18px;
@@ -666,6 +698,20 @@ a {
 .flashcard-sidebar {
   display: grid;
   gap: 16px;
+}
+
+.flashcard-score-card {
+  display: grid;
+  gap: 8px;
+}
+
+.flashcard-score-card p {
+  color: var(--text-soft);
+}
+
+.flashcard-score-note {
+  font-size: 0.92rem;
+  color: var(--text-muted);
 }
 
 .set-list {

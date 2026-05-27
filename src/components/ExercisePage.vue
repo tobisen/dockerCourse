@@ -1,14 +1,21 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { courseName, lessons, lesson1Exercises } from '../data/course'
+import { courseName, lessons, lesson1Exercises, lesson2Exercises } from '../data/course'
+import { shuffleArray } from '../utils/shuffle'
 
 const route = useRoute()
 
 const lessonId = computed(() => Number(route.params.id))
 const lesson = computed(() => lessons.find((item) => item.id === lessonId.value))
 const isLesson1 = computed(() => lessonId.value === 1)
-const exercises = computed(() => (isLesson1.value ? lesson1Exercises : []))
+const isLesson2 = computed(() => lessonId.value === 2)
+const exercises = computed(() => {
+  if (isLesson1.value) return lesson1Exercises
+  if (isLesson2.value) return lesson2Exercises
+  return []
+})
+const shuffledExercises = computed(() => shuffleArray(exercises.value))
 </script>
 
 <template>
@@ -27,15 +34,18 @@ const exercises = computed(() => (isLesson1.value ? lesson1Exercises : []))
         <p>Här tränar du aktivt på innehållet från lektionen med korta, praktiska uppgifter.</p>
       </div>
 
-      <div v-if="isLesson1" class="exercise-section">
+      <div v-if="isLesson1 || isLesson2" class="exercise-section">
         <div class="section-heading compact">
-          <p class="eyebrow">Lektion 1</p>
+          <p class="eyebrow">{{ lesson?.title ?? `Lektion ${lessonId}` }}</p>
           <h3>Föreslagna övningar</h3>
-          <p>De här övningarna är plockade direkt ur lektion 1-materialet för att stärka begrepp, flöde och kommandon.</p>
+          <p>
+            De här övningarna är plockade direkt ur lektionsmaterialet och är tänkta att hjälpa dig
+            att jobba praktiskt med innehållet.
+          </p>
         </div>
 
         <div class="exercise-list">
-          <article v-for="exercise in exercises" :key="exercise.title" class="exercise-card">
+          <article v-for="exercise in shuffledExercises" :key="exercise.id" class="exercise-card">
             <div class="exercise-card-top">
               <h4>{{ exercise.title }}</h4>
               <RouterLink :to="`/lektion/${lessonId}/ovningar/${exercise.id}`" class="page-link-button">
