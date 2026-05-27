@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { courseName, lesson1Exercises, lesson2Exercises, lesson3Exercises, lessons } from '../data/course'
+import {
+  courseName,
+  lesson1Exercises,
+  lesson2Exercises,
+  lesson3Exercises,
+  lesson4Exercises,
+  lesson5Exercises,
+  lessons,
+} from '../data/course'
 import { shuffleArray } from '../utils/shuffle'
 
 const route = useRoute()
@@ -12,10 +20,14 @@ const lesson = computed(() => lessons.find((item) => item.id === lessonId.value)
 const isLesson1 = computed(() => lessonId.value === 1)
 const isLesson2 = computed(() => lessonId.value === 2)
 const isLesson3 = computed(() => lessonId.value === 3)
+const isLesson4 = computed(() => lessonId.value === 4)
+const isLesson5 = computed(() => lessonId.value === 5)
 const exercises = computed(() => {
   if (isLesson1.value) return lesson1Exercises
   if (isLesson2.value) return lesson2Exercises
   if (isLesson3.value) return lesson3Exercises
+  if (isLesson4.value) return lesson4Exercises
+  if (isLesson5.value) return lesson5Exercises
   return []
 })
 const exercise = computed(() => exercises.value.find((item) => item.id === exerciseId.value))
@@ -72,7 +84,7 @@ const correctCount = computed(() =>
         <p>{{ lesson?.title ?? `Lektion ${lessonId}` }}</p>
       </div>
 
-      <article v-if="(isLesson1 || isLesson2) && exercise" class="exercise-help">
+      <article v-if="(isLesson1 || isLesson2 || isLesson3 || isLesson4 || isLesson5) && exercise" class="exercise-help">
         <div class="exercise-help-card">
           <p class="eyebrow">Uppgift</p>
           <h3>{{ exercise.title }}</h3>

@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { courseName, lessons, lesson1Flashcards, lesson2Flashcards, lesson3Flashcards } from '../data/course'
+import {
+  courseName,
+  lessons,
+  lesson1Flashcards,
+  lesson2Flashcards,
+  lesson3Flashcards,
+  lesson4Flashcards,
+  lesson5Flashcards,
+} from '../data/course'
 import { shuffleArray } from '../utils/shuffle'
 
 const route = useRoute()
@@ -11,10 +19,14 @@ const lesson = computed(() => lessons.find((item) => item.id === lessonId.value)
 const isLesson1 = computed(() => lessonId.value === 1)
 const isLesson2 = computed(() => lessonId.value === 2)
 const isLesson3 = computed(() => lessonId.value === 3)
+const isLesson4 = computed(() => lessonId.value === 4)
+const isLesson5 = computed(() => lessonId.value === 5)
 const sourceFlashcards = computed(() => {
   if (isLesson1.value) return lesson1Flashcards
   if (isLesson2.value) return lesson2Flashcards
   if (isLesson3.value) return lesson3Flashcards
+  if (isLesson4.value) return lesson4Flashcards
+  if (isLesson5.value) return lesson5Flashcards
   return []
 })
 const flashcards = ref<typeof lesson1Flashcards>([])
@@ -88,7 +100,7 @@ function resetChoice() {
         </p>
       </div>
 
-      <div v-if="isLesson1 || isLesson2 || isLesson3" class="flashcard-layout flashcard-layout-lesson">
+      <div v-if="isLesson1 || isLesson2 || isLesson3 || isLesson4 || isLesson5" class="flashcard-layout flashcard-layout-lesson">
         <div class="flashcard-stage">
           <div class="flashcard-stack">
             <div class="flashcard flashcard-front">
@@ -133,7 +145,7 @@ function resetChoice() {
         </div>
 
         <aside class="flashcard-sidebar">
-          <div class="section-heading compact">
+              <div class="section-heading compact">
             <h3>Vad du tränar på</h3>
             <p>
               Det här setet täcker grunderna från

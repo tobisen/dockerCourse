@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { courseName, lessons, lesson1Topics, lesson2Topics, lesson3Topics } from '../data/course'
+import {
+  courseName,
+  lessons,
+  lesson1Topics,
+  lesson2Topics,
+  lesson3Topics,
+  lesson4Topics,
+  lesson5Topics,
+} from '../data/course'
 
 const route = useRoute()
 
@@ -11,10 +19,14 @@ const lessonNumber = computed(() => lessonId.value)
 const isLesson1 = computed(() => lessonId.value === 1)
 const isLesson2 = computed(() => lessonId.value === 2)
 const isLesson3 = computed(() => lessonId.value === 3)
+const isLesson4 = computed(() => lessonId.value === 4)
+const isLesson5 = computed(() => lessonId.value === 5)
 const topics = computed(() => {
   if (isLesson1.value) return lesson1Topics
   if (isLesson2.value) return lesson2Topics
   if (isLesson3.value) return lesson3Topics
+  if (isLesson4.value) return lesson4Topics
+  if (isLesson5.value) return lesson5Topics
   return []
 })
 
@@ -51,6 +63,24 @@ const resources = computed(() => {
       },
     ]
   }
+  if (isLesson4.value) {
+    return [
+      {
+        label: 'Day 4.pptx',
+        href: '/lesson-material/Day 4.pptx',
+        description: 'Powerpointen för lektion 4.',
+      },
+    ]
+  }
+  if (isLesson5.value) {
+    return [
+      {
+        label: 'Day 5.pptx',
+        href: '/lesson-material/Day 5.pptx',
+        description: 'Powerpointen för lektion 5.',
+      },
+    ]
+  }
   return []
 })
 </script>
@@ -82,11 +112,13 @@ const resources = computed(() => {
         </article>
         <article class="info-card">
           <h3>Status</h3>
-          <p>{{ isLesson1 || isLesson2 || isLesson3 ? 'Färdig att plugga' : 'Kommer fyllas på' }}</p>
+          <p>
+            {{ isLesson1 || isLesson2 || isLesson3 || isLesson4 || isLesson5 ? 'Färdig att plugga' : 'Kommer fyllas på' }}
+          </p>
         </article>
       </div>
 
-      <div v-if="isLesson1 || isLesson2 || isLesson3" class="lesson-summary">
+      <div v-if="isLesson1 || isLesson2 || isLesson3 || isLesson4 || isLesson5" class="lesson-summary">
         <div class="lesson-resources">
           <div class="section-heading compact">
             <h3>Resurser</h3>

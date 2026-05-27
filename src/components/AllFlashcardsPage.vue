@@ -5,7 +5,7 @@ import { allFlashcards, courseName, lessons } from '../data/course'
 import { shuffleArray } from '../utils/shuffle'
 
 const lessonLabel = computed(() => lessons
-  .filter((lesson) => lesson.id <= 3)
+  .filter((lesson) => lesson.id <= 5)
   .map((lesson) => lesson.title)
   .join(' + '))
 

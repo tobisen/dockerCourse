@@ -70,14 +70,16 @@ export const lessons: Lesson[] = [
   {
     id: 4,
     title: 'Lektion 4',
-    focus: 'Kommer fyllas med nästa del av kursen',
-    notes: 'Plats för teori, demo och praktiska begrepp.',
+    focus: 'Ingress, configmaps, secrets och persistent storage i Kubernetes',
+    notes:
+      'Lektion 4 handlar om hur du gör tjänster åtkomliga via ingress, hur du konfigurerar pods med configmaps och secrets, samt hur du tänker kring volume, PersistentVolume och PersistentVolumeClaim. Vi avslutar med en Postgres-utmaning där du kopplar ihop flera Kubernetes-delar i ett mer realistiskt scenario.',
   },
   {
     id: 5,
     title: 'Lektion 5',
-    focus: 'Kommer fyllas med nästa del av kursen',
-    notes: 'Plats för teori, demo och praktiska begrepp.',
+    focus: 'Petclinic i AKS, ACR, namespace, debug och readiness/liveness',
+    notes:
+      'Lektion 5 tar kursen till en mer verklig app: Petclinic. Du lär dig att bygga och pusha images till ACR, använda namespace, skapa Kubernetes-objekt, felsöka med kubectl, skapa deployments och services samt förstå readiness- och liveness-probes.',
   },
   {
     id: 6,
@@ -648,6 +650,944 @@ export const lesson3Topics: Topic[] = [
     title: 'Nätverk och stateless',
     details:
       'Pods är tillfälliga resurser med egna IP-adresser. Services och labels hjälper andra komponenter att hitta dem även när de byts ut.',
+  },
+]
+
+export const lesson4Topics: Topic[] = [
+  {
+    title: 'Ingress',
+    details:
+      'Ingress används för att styra HTTP- och HTTPS-trafik till rätt service baserat på regler som host och path.',
+  },
+  {
+    title: 'Ingress controller',
+    details:
+      'Ingress kräver en controller i klustret. I Azure kan ett ingress-addon installera och konfigurera den åt dig.',
+  },
+  {
+    title: 'ConfigMap',
+    details:
+      'ConfigMaps används för att mata in icke-hemliga konfigurationsvärden till pods, ofta som environment variables.',
+  },
+  {
+    title: 'Secrets',
+    details:
+      'Secrets liknar ConfigMaps men används för känsliga värden och hanteras separat, ofta base64-enkoderade i YAML.',
+  },
+  {
+    title: 'Volymer i pods',
+    details:
+      'Vissa containers behöver filer eller cache på disk, så du mountar volumes för att ge dem ett ställe att skriva till.',
+  },
+  {
+    title: 'PersistentVolume och PVC',
+    details:
+      'PersistentVolumes är lagringsresurser i klustret och PersistentVolumeClaims är poddens sätt att begära lagring.',
+  },
+  {
+    title: 'Stabil lagring',
+    details:
+      'När en pod startas om försvinner lokala data, så beständig lagring behövs för sådant som databaser och annan state.',
+  },
+  {
+    title: 'Utmaning: postgres',
+    details:
+      'Lektion 4 avslutas med en postgres-utmaning där du kombinerar deployment, secret, volume och felsökning.',
+  },
+]
+
+export const lesson4Exercises: Exercise[] = [
+  {
+    id: 'ingress-rules',
+    title: 'Skapa en ingressregel',
+    goal: 'Förstå hur ingress skickar trafik till rätt backend.',
+    prompt:
+      'Skriv en ingress som skickar trafiken från en host eller path till rätt service och förklara hur regeln fungerar.',
+    steps: [
+      'Identifiera vilken service ingressen ska peka på.',
+      'Bestäm host och path som ska matcha trafiken.',
+      'Skriv en ingress YAML med rätt `ingressClassName` och backend.',
+      'Kontrollera att controller finns i klustret eller i Azure-addon.',
+    ],
+    example: [
+      'Ingress är perfekt när du vill styra webtrafik till flera tjänster via samma externa ingång.',
+      'Host- och path-regler gör det enkelt att dela upp trafik.',
+    ],
+    expected: [
+      'Du ska förstå att ingress ligger framför services och pods.',
+      'Du ska kunna förklara varför ingress är protokollmedveten och reglerad.',
+    ],
+    answer: [
+      'Facit: ingress översätter HTTP-trafik till rätt backend-service enligt regler du definierar.',
+      'Facit: en ingress controller måste vara installerad för att ingressen ska fungera.',
+    ],
+    mistakes: [
+      'Du tror att ingress är samma sak som en service.',
+      'Du glömmer att en ingress controller måste finnas i klustret.',
+      'Du pekar direkt på en pod i stället för på en service.',
+    ],
+    quiz: [
+      {
+        question: 'Vad används ingress till?',
+        options: [
+          'Att styra HTTP/HTTPS-trafik till rätt service',
+          'Att bygga en containerimage',
+          'Att skapa ett namespace',
+          'Att lagra hemligheter',
+        ],
+        answer: 'Att styra HTTP/HTTPS-trafik till rätt service',
+      },
+      {
+        question: 'Vad måste finnas i klustret för att ingress ska fungera?',
+        options: ['Ingress controller', 'Dockerfile', 'VolumeClaim', 'Secret token'],
+        answer: 'Ingress controller',
+      },
+    ],
+  },
+  {
+    id: 'configmap-and-secrets',
+    title: 'Konfigurera med ConfigMap och Secret',
+    goal: 'Lära dig mata in värden till en pod på rätt sätt.',
+    prompt:
+      'Skapa en ConfigMap för vanliga värden och en Secret för känsliga värden och koppla in dem i en pod.',
+    steps: [
+      'Definiera en ConfigMap med icke-hemliga värden.',
+      'Definiera en Secret för lösenord eller tokens.',
+      'Använd `env` eller `envFrom` för att koppla dem till podden.',
+      'Verifera att applikationen läser värdena som förväntat.',
+    ],
+    example: [
+      'ConfigMap är bra för exempelvis `APP_ENV` och andra allmänna inställningar.',
+      'Secret passar bättre för lösenord och nycklar.',
+    ],
+    expected: [
+      'Du ska kunna skilja på config och secret.',
+      'Du ska förstå hur environment variables kan komma från Kubernetes-objekt.',
+    ],
+    answer: [
+      'Facit: ConfigMap används för vanlig konfiguration och Secret för känslig information.',
+      'Facit: `envFrom` kan använda både ConfigMap och Secret i en pod.',
+    ],
+    mistakes: [
+      'Du lägger känsliga värden i en vanlig ConfigMap.',
+      'Du glömmer att base64 bara är encoding, inte riktig kryptering.',
+      'Du tror att värdena automatiskt blir permanenta utan att definieras i YAML eller objekten.',
+    ],
+    quiz: [
+      {
+        question: 'Vad används ConfigMap till?',
+        options: [
+          'Vanliga konfigurationsvärden',
+          'Att skapa ett namespace',
+          'Att bygga images',
+          'Att exponerar pods på internet',
+        ],
+        answer: 'Vanliga konfigurationsvärden',
+      },
+      {
+        question: 'Vad används Secret till?',
+        options: [
+          'Känsliga värden som lösenord',
+          'Att lagra pod-loggar',
+          'Att skapa en deployment',
+          'Att styra ingress-hosts',
+        ],
+        answer: 'Känsliga värden som lösenord',
+      },
+    ],
+  },
+  {
+    id: 'pvc-and-storage',
+    title: 'Använd PersistentVolumeClaim',
+    goal: 'Förstå beständig lagring i Kubernetes.',
+    prompt:
+      'Förklara hur en PersistentVolumeClaim kopplas till en PersistentVolume och hur en pod mountar lagringen.',
+    steps: [
+      'Identifiera om klustret har en tillgänglig PersistentVolume.',
+      'Skapa en PersistentVolumeClaim med rätt storage och access mode.',
+      'Mounta claimen i podden via volumes och volumeMounts.',
+      'Kontrollera att data finns kvar efter omstart.',
+    ],
+    example: [
+      'PVC är poddens begäran om lagring.',
+      'PV är själva lagringsresursen i klustret.',
+    ],
+    expected: [
+      'Du ska kunna skilja på PV och PVC.',
+      'Du ska förstå varför volumes behövs när poddar startas om.',
+    ],
+    answer: [
+      'Facit: PVC begär lagring, PV tillhandahåller lagring och podden mountar sedan claimen.',
+      'Facit: detta är lösningen när data måste överleva att podden försvinner.',
+    ],
+    mistakes: [
+      'Du tror att en pod i sig är beständig.',
+      'Du blandar ihop PV med PVC.',
+      'Du glömmer att volumeMounts och volume names måste matcha.',
+    ],
+    quiz: [
+      {
+        question: 'Vad är en PersistentVolumeClaim?',
+        options: [
+          'En begäran om lagring från en pod',
+          'En container image',
+          'En ingressregel',
+          'En namespace',
+        ],
+        answer: 'En begäran om lagring från en pod',
+      },
+      {
+        question: 'Vad är PersistentVolume?',
+        options: [
+          'Själva lagringsresursen i klustret',
+          'En typ av service',
+          'En secret för lösenord',
+          'En pod-loggfil',
+        ],
+        answer: 'Själva lagringsresursen i klustret',
+      },
+    ],
+  },
+  {
+    id: 'postgres-challenge',
+    title: 'Postgres-utmaning',
+    goal: 'Knyta ihop flera Kubernetes-bitar i ett verkligare scenario.',
+    prompt:
+      'Sätt upp PostgreSQL i Kubernetes med secret och volym och förklara hur du felsöker om något går fel.',
+    steps: [
+      'Skapa en deployment eller pod för Postgres enligt utmaningen.',
+      'Koppla in secret för lösenord och en volym för data.',
+      'Kontrollera status med `kubectl get` och `kubectl describe`.',
+      'Läs loggar med `kubectl logs deploy/postgres` om du fastnar.',
+    ],
+    example: [
+      'Det här är ett bra exempel på när stateless-tänk inte räcker.',
+      'Databasen behöver beständig lagring och rätt konfiguration.',
+    ],
+    expected: [
+      'Du ska kunna koppla ihop secret, volume och deployment i en och samma lösning.',
+      'Du ska veta vilka kommandon du använder när du felsöker.',
+    ],
+    answer: [
+      'Facit: Postgres behöver både hemligheter och beständig lagring för att fungera stabilt.',
+      'Facit: `kubectl get`, `describe` och `logs` är de viktigaste kommandona för att hitta fel.',
+    ],
+    mistakes: [
+      'Du kör databasen utan volym och blir förvånad när data försvinner.',
+      'Du glömmer att sätta lösenord via secret eller env.',
+      'Du felsöker utan att först kolla status och loggar.',
+    ],
+    quiz: [
+      {
+        question: 'Varför behöver Postgres en volym?',
+        options: [
+          'För att lagra data mellan omstarter',
+          'För att bygga snabbare',
+          'För att skapa ingress',
+          'För att skapa namespace',
+        ],
+        answer: 'För att lagra data mellan omstarter',
+      },
+      {
+        question: 'Vilket kommando är bra för att läsa loggar från en deployment?',
+        options: [
+          'kubectl logs deploy/postgres',
+          'docker push',
+          'kubectl create namespace',
+          'kubectl apply -f',
+        ],
+        answer: 'kubectl logs deploy/postgres',
+      },
+    ],
+  },
+  {
+    id: 'configmap-secret-mount',
+    title: 'Koppla ConfigMap och Secret till en pod',
+    goal: 'Öva på att mata in konfiguration i en pod.',
+    prompt:
+      'Skapa en pod som använder både ConfigMap och Secret via environment variables och förklara varför du väljer just den lösningen.',
+    steps: [
+      'Skapa eller identifiera en ConfigMap med vanliga inställningar.',
+      'Skapa eller identifiera en Secret med känsliga värden.',
+      'Koppla dem till podden med `env` eller `envFrom`.',
+      'Verifera att appen får rätt värden utan att de ligger hårdkodat i manifestet.',
+    ],
+    example: [
+      'ConfigMap är praktiskt för exempelvis miljöval och feature flags.',
+      'Secret används för lösenord och tokens som inte ska stå öppet i klartext.',
+    ],
+    expected: [
+      'Du ska förstå skillnaden mellan konfiguration och hemligheter.',
+      'Du ska veta hur värden kan skickas in till en pod via Kubernetes-objekt.',
+    ],
+    answer: [
+      'Facit: config och hemligheter ska ligga i separata objekt och hämtas in i podden via env eller mounts.',
+      'Facit: detta gör det lättare att ändra värden utan att bygga om appen.',
+    ],
+    mistakes: [
+      'Du lägger allt i manifestet direkt i stället för i ConfigMap/Secret.',
+      'Du använder Secret för helt vanlig konfiguration.',
+      'Du glömmer att kontrollera att variablerna faktiskt når containern.',
+    ],
+    quiz: [
+      {
+        question: 'Vad används ConfigMap till?',
+        options: [
+          'Vanliga konfigurationsvärden',
+          'Lösenord',
+          'Persistenta volymer',
+          'Ingressregler',
+        ],
+        answer: 'Vanliga konfigurationsvärden',
+      },
+      {
+        question: 'Vad används Secret till?',
+        options: [
+          'Känsliga värden som lösenord',
+          'Att exponerar pods på internet',
+          'Att bygga images',
+          'Att skapa namespaces',
+        ],
+        answer: 'Känsliga värden som lösenord',
+      },
+    ],
+  },
+  {
+    id: 'pvc-pv-mount',
+    title: 'Mounta PersistentVolumeClaim i en pod',
+    goal: 'Bli bekväm med beständig lagring i praktiken.',
+    prompt:
+      'Skapa en pod som mountar en PVC och förklara hur data kan överleva att podden startas om.',
+    steps: [
+      'Se till att en PV eller dynamisk provisionering finns i klustret.',
+      'Skapa en PVC som begär rätt mängd storage och access mode.',
+      'Referera claimen i poddens volumes och volumeMounts.',
+      'Skriv eller läs en fil i mounten och kontrollera att den finns kvar efter omstart.',
+    ],
+    example: [
+      'Det här är grundmönstret när en app behöver spara data mellan restarts.',
+      'Databaser och cache-liknande data är vanliga exempel.',
+    ],
+    expected: [
+      'Du ska kunna skilja mellan lagringsresursen och poddens begäran om lagring.',
+      'Du ska förstå att själva datan ligger utanför poddens livscykel.',
+    ],
+    answer: [
+      'Facit: PVC begär lagring, PV tillhandahåller lagring och podden mountar claimen.',
+      'Facit: detta gör att data kan överleva att podden försvinner och skapas igen.',
+    ],
+    mistakes: [
+      'Du tror att data blir beständig bara för att den skrivs i containern.',
+      'Du blandar ihop PV och PVC.',
+      'Du glömmer att mountPath och volume name måste passa ihop.',
+    ],
+    quiz: [
+      {
+        question: 'Vad är en PVC?',
+        options: [
+          'En begäran om lagring',
+          'Själva lagringsresursen',
+          'En ingress',
+          'En deployment',
+        ],
+        answer: 'En begäran om lagring',
+      },
+      {
+        question: 'Vad gör en volumeMount i en pod?',
+        options: [
+          'Kopplar in lagringen i containern',
+          'Bygger en image',
+          'Skapar ett namespace',
+          'Pushar till registry',
+        ],
+        answer: 'Kopplar in lagringen i containern',
+      },
+    ],
+  },
+]
+
+export const lesson5Topics: Topic[] = [
+  {
+    title: 'Petclinic i AKS',
+    details:
+      'Lektion 5 bygger vidare på den riktiga appen Petclinic och visar hur du får den att fungera i Azure Kubernetes Service.',
+  },
+  {
+    title: 'ACR och image-flöde',
+    details:
+      'Du bygger image lokalt, taggar den korrekt och pushar till Azure Container Registry innan du använder den i deployment.',
+  },
+  {
+    title: 'Namespace och struktur',
+    details:
+      'Appen läggs i ett eget namespace så att resurserna blir tydliga och lätta att hantera.',
+  },
+  {
+    title: 'Kubernetes-objekt',
+    details:
+      'Du skapar pods, deployments och services med kubectl eller YAML och kan generera filer med dry-run.',
+  },
+  {
+    title: 'Debugging',
+    details:
+      'kubectl get, describe, logs och exec används för att hitta fel i både app och databas.',
+  },
+  {
+    title: 'Readiness och liveness',
+    details:
+      'Kontrollerna avgör när trafiken får gå till appen och när Kubernetes ska starta om något som slutat fungera.',
+  },
+  {
+    title: 'Service och extern åtkomst',
+    details:
+      'Services används för att nå frontend och databas på ett stabilt sätt, inklusive LoadBalancer när appen ska ut på nätet.',
+  },
+  {
+    title: 'Helhetsflöde',
+    details:
+      'Lektion 5 knyter ihop bygg, registry, namespace, deployment, service och hälsokontroller i en konkret app.',
+  },
+]
+
+export const lesson4Flashcards: Flashcard[] = [
+  {
+    tag: 'Ingress',
+    question: 'Vad gör ingress?',
+    answer: 'Styr HTTP/HTTPS-trafik till rätt service via regler.',
+    options: [
+      'Styr HTTP/HTTPS-trafik till rätt service via regler.',
+      'Bygger en container image.',
+      'Skapar en pod direkt.',
+      'Lagrar databaspålagring.',
+    ],
+  },
+  {
+    tag: 'Ingress',
+    question: 'Vad behöver ingress för att fungera?',
+    answer: 'En ingress controller i klustret.',
+    options: [
+      'En ingress controller i klustret.',
+      'En Dockerfile i samma mapp.',
+      'En PersistentVolumeClaim.',
+      'En namespace med namnet ingress.',
+    ],
+  },
+  {
+    tag: 'Config',
+    question: 'Vad används ConfigMap till?',
+    answer: 'Vanliga konfigurationsvärden.',
+    options: [
+      'Vanliga konfigurationsvärden.',
+      'Känsliga lösenord.',
+      'Lagring av bilder.',
+      'Service discovery.',
+    ],
+  },
+  {
+    tag: 'Secret',
+    question: 'Vad används Secret till?',
+    answer: 'Känsliga värden som lösenord och tokens.',
+    options: [
+      'Känsliga värden som lösenord och tokens.',
+      'Att skapa pods snabbare.',
+      'Att styra ingress hostnames.',
+      'Att skriva loggar.',
+    ],
+  },
+  {
+    tag: 'Storage',
+    question: 'Vad är en PVC?',
+    answer: 'En begäran om lagring från en pod.',
+    options: [
+      'En begäran om lagring från en pod.',
+      'Själva lagringsresursen i klustret.',
+      'En Kubernetes service.',
+      'En type av ingress.',
+    ],
+  },
+  {
+    tag: 'Storage',
+    question: 'Vad är en PV?',
+    answer: 'Själva lagringsresursen i klustret.',
+    options: [
+      'Själva lagringsresursen i klustret.',
+      'En podsom starter service.',
+      'En hemlig miljövariabel.',
+      'En deployment för databaser.',
+    ],
+  },
+  {
+    tag: 'Felsökning',
+    question: 'Vilket kommando är bra för att se status?',
+    answer: 'kubectl get och kubectl describe',
+    options: [
+      'kubectl get och kubectl describe',
+      'docker tag och docker push',
+      'kubectl create namespace',
+      'docker build och docker run',
+    ],
+  },
+  {
+    tag: 'Utmaning',
+    question: 'Vad är extra viktigt för en databas i Kubernetes?',
+    answer: 'Beständig lagring och rätt konfiguration.',
+    options: [
+      'Beständig lagring och rätt konfiguration.',
+      'En extra ingress controller.',
+      'Flera Dockerfiles.',
+      'Att den körs i bakgrunden.',
+    ],
+  },
+  {
+    tag: 'Ingress',
+    question: 'Vad gör en ingress controller?',
+    answer: 'Implementerar ingressreglerna i klustret.',
+    options: [
+      'Implementerar ingressreglerna i klustret.',
+      'Bygger containers på nytt.',
+      'Skapar persistent storage.',
+      'Konverterar Dockerfile till YAML.',
+    ],
+  },
+  {
+    tag: 'Storage',
+    question: 'Vad är skillnaden mellan PV och PVC?',
+    answer: 'PV är lagringen, PVC är begäran om lagring.',
+    options: [
+      'PV är lagringen, PVC är begäran om lagring.',
+      'PVC är lagringen, PV är begäran om lagring.',
+      'Båda är samma sak.',
+      'PV är en service och PVC är en ingress.',
+    ],
+  },
+]
+
+export const lesson5Exercises: Exercise[] = [
+  {
+    id: 'acr-push',
+    title: 'Bygg och pusha till ACR',
+    goal: 'Träna på att få ut en image till Azure Container Registry.',
+    prompt:
+      'Bygg Petclinic-imagen, tagga den korrekt för ACR och förklara hur du pushar den till registry.',
+    steps: [
+      'Klona appen och bygg imagen lokalt.',
+      'Tagga med ACR-adressen, till exempel `myregistry.azurecr.io/image:tag`.',
+      'Logga in i ACR med rätt Azure-credentials.',
+      'Pusha imagen och kontrollera att den finns i registry.',
+    ],
+    example: [
+      'Det viktiga är att image-taggen matchar det registry du vill pusha till.',
+      'ACR kräver rätt rättigheter innan push fungerar.',
+    ],
+    expected: [
+      'Du ska förstå varför namnet måste vara rätt innan push.',
+      'Du ska veta att image måste byggas och taggas innan den kan användas i Kubernetes.',
+    ],
+    answer: [
+      'Facit: du bygger lokalt, taggar med ACR-namnet, loggar in och pushar sedan imagen.',
+      'Facit: `docker push myregistry.azurecr.io/...` skickar imagen till Azure Registry.',
+    ],
+    mistakes: [
+      'Du pushar till fel registry-adress.',
+      'Du tror att taggning bygger om imagen.',
+      'Du glömmer att logga in innan push.',
+    ],
+    quiz: [
+      {
+        question: 'Vad gör du innan du kan pusha till ACR?',
+        options: [
+          'Bygger och taggar imagen',
+          'Skapar ett namespace',
+          'Skapar en ingress',
+          'Stänger av Docker Desktop',
+        ],
+        answer: 'Bygger och taggar imagen',
+      },
+      {
+        question: 'Vad måste image-taggen matcha för ACR?',
+        options: [
+          'Registry-adressen',
+          'Pod-namnet',
+          'Service-namnet',
+          'Namespace-namnet',
+        ],
+        answer: 'Registry-adressen',
+      },
+    ],
+  },
+  {
+    id: 'namespace-setup',
+    title: 'Skapa namespace för appen',
+    goal: 'Hålla Petclinic i en egen tydlig miljö.',
+    prompt:
+      'Skapa ett namespace för appen och byt context så att dina kommandon hamnar där du vill ha dem.',
+    steps: [
+      'Skapa namespace med `kubectl create ns dev`.',
+      'Kontrollera med `kubectl get ns`.',
+      'Byt context med `kubectl config set-context --current --namespace=dev`.',
+      'Verifiera att nya resurser hamnar i rätt namespace.',
+    ],
+    example: [
+      'Namespace hjälper dig att hålla app, test och prod separerade.',
+      'Det blir mycket lättare att felsöka när allt inte hamnar i default.',
+    ],
+    expected: [
+      'Du ska förstå varför namespace är viktigt i ett större kluster.',
+      'Du ska kunna växla namespace i din CLI-session.',
+    ],
+    answer: [
+      'Facit: namespace håller resurserna organiserade och gör kommandon mer förutsägbara.',
+      'Facit: `kubectl config set-context` är ett enkelt sätt att byta default namespace.',
+    ],
+    mistakes: [
+      'Du kör allt i default och tappar överblicken.',
+      'Du tror att namespace är samma sak som en pod.',
+      'Du glömmer att kontrollera vilken namespace du faktiskt är i.',
+    ],
+    quiz: [
+      {
+        question: 'Varför använder man namespace?',
+        options: [
+          'För att hålla resurser organiserade och separerade',
+          'För att bygga images snabbare',
+          'För att pusha till registry',
+          'För att skapa en secret',
+        ],
+        answer: 'För att hålla resurser organiserade och separerade',
+      },
+      {
+        question: 'Vilket kommando byter default-namespace?',
+        options: [
+          'kubectl config set-context',
+          'docker compose up',
+          'kubectl logs',
+          'docker inspect',
+        ],
+        answer: 'kubectl config set-context',
+      },
+    ],
+  },
+  {
+    id: 'debug-pod',
+    title: 'Felsök poddar och deployments',
+    goal: 'Bli trygg med de vanligaste debug-kommandona.',
+    prompt:
+      'Använd kubectl för att hitta status, loggar och eventuella fel i dina objekt. Förklara vad du letar efter i varje kommando.',
+    steps: [
+      'Kör `kubectl get` för att se vad som finns.',
+      'Använd `kubectl describe` för att läsa detaljer och events.',
+      'Läs loggar med `kubectl logs`.',
+      'Om du behöver gräva djupare, använd `kubectl exec` för att gå in i containern.',
+    ],
+    example: [
+      'Felsökning i Kubernetes handlar ofta om att först se status och sedan läsa loggar.',
+      'Describe är ofta mer användbart än get när något ser konstigt ut.',
+    ],
+    expected: [
+      'Du ska veta när du använder get, describe, logs och exec.',
+      'Du ska förstå hur du hittar fel steg för steg.',
+    ],
+    answer: [
+      'Facit: `kubectl get` visar översikt, `describe` visar detaljer och `logs` visar vad appen skriver.',
+      'Facit: `kubectl exec` används när du behöver titta in i containern.',
+    ],
+    mistakes: [
+      'Du hoppar direkt till exec utan att läsa status och loggar.',
+      'Du tror att get räcker för all felsökning.',
+      'Du missar events som ofta finns i describe-output.',
+    ],
+    quiz: [
+      {
+        question: 'Vilket kommando visar detaljer och events?',
+        options: [
+          'kubectl describe',
+          'docker build',
+          'kubectl create ns',
+          'docker push',
+        ],
+        answer: 'kubectl describe',
+      },
+      {
+        question: 'Vilket kommando visar appens loggar?',
+        options: ['kubectl logs', 'kubectl apply', 'docker tag', 'kubectl config set-context'],
+        answer: 'kubectl logs',
+      },
+    ],
+  },
+  {
+    id: 'readiness-liveness',
+    title: 'Liveness och readiness',
+    goal: 'Förstå hur Kubernetes vet när appen är redo eller behöver startas om.',
+    prompt:
+      'Lägg till readiness- och liveness-kontroller i en deployment och förklara vad som händer när de passerar eller misslyckas.',
+    steps: [
+      'Läs igenom skillnaden mellan readiness och liveness.',
+      'Definiera endpoints eller checks i deploymenten.',
+      'Kontrollera att appen inte får trafik förrän readiness passerar.',
+      'Observera att liveness kan starta om containern om den slutar svara.',
+    ],
+    example: [
+      'Readiness handlar om att appen är redo att ta trafik.',
+      'Liveness handlar om att appen fortfarande lever och bör startas om om den blir dålig.',
+    ],
+    expected: [
+      'Du ska kunna skilja readiness från liveness.',
+      'Du ska förstå varför båda behövs för en stabil app.',
+    ],
+    answer: [
+      'Facit: readiness stoppar trafik tills appen är redo, liveness hjälper Kubernetes att starta om en trasig app.',
+      'Facit: det här minskar risken att trafik går till en app som inte är klar.',
+    ],
+    mistakes: [
+      'Du blandar ihop readiness med liveness.',
+      'Du tror att podden är helt frisk bara för att den är igång.',
+      'Du glömmer att readiness påverkar trafikflödet.',
+    ],
+    quiz: [
+      {
+        question: 'Vad gör readiness?',
+        options: [
+          'Avgör om podden får trafik',
+          'Bygger images',
+          'Skapar namespaces',
+          'Pusha till registry',
+        ],
+        answer: 'Avgör om podden får trafik',
+      },
+      {
+        question: 'Vad gör liveness?',
+        options: [
+          'Avgör om podden behöver startas om',
+          'Skapar en service',
+          'Lagrar data permanent',
+          'Bygger en ingress',
+        ],
+        answer: 'Avgör om podden behöver startas om',
+      },
+    ],
+  },
+  {
+    id: 'probe-checks',
+    title: 'Testa probes i praktiken',
+    goal: 'Se hur readiness och liveness påverkar beteendet.',
+    prompt:
+      'Lägg till en probe-konfiguration i en deployment och förklara vad som händer om endpointen slutar svara.',
+    steps: [
+      'Bestäm vilken endpoint eller kommando som ska användas för checken.',
+      'Lägg till readinessProbe och livenessProbe i deployment YAML.',
+      'Testa genom att ändra appen så att en probe misslyckas.',
+      'Observera skillnaden mellan att stoppa trafik och att starta om.',
+    ],
+    example: [
+      'Readiness används ofta för att stoppa trafik under uppstart.',
+      'Liveness används när du vill att Kubernetes ska starta om en trasig app.',
+    ],
+    expected: [
+      'Du ska se skillnaden mellan “inte redo” och “måste startas om”.',
+      'Du ska förstå att probes förbättrar stabilitet och drift.',
+    ],
+    answer: [
+      'Facit: readiness stoppar trafik tills appen är redo, liveness hjälper Kubernetes att återställa appen vid fel.',
+      'Facit: probes gör att appen beter sig mer förutsägbart i drift.',
+    ],
+    mistakes: [
+      'Du tror att readiness och liveness betyder samma sak.',
+      'Du använder inga checks alls och förväntar dig stabil drift.',
+      'Du glömmer att en probe kan påverka både trafik och restart-beteende.',
+    ],
+    quiz: [
+      {
+        question: 'Vad påverkar readiness?',
+        options: [
+          'Om podden får trafik',
+          'Om image kan byggas',
+          'Om registry är publikt',
+          'Om namespace finns',
+        ],
+        answer: 'Om podden får trafik',
+      },
+      {
+        question: 'Vad påverkar liveness?',
+        options: [
+          'Om Kubernetes startar om podden',
+          'Om ingress skapas',
+          'Om PVC används',
+          'Om service hittas',
+        ],
+        answer: 'Om Kubernetes startar om podden',
+      },
+    ],
+  },
+  {
+    id: 'acr-and-deployment',
+    title: 'Koppla ACR-image till deployment',
+    goal: 'Bygga en tydlig kedja från registry till körande app.',
+    prompt:
+      'Ta en image från ACR och använd den i en deployment. Beskriv hur du verifierar att rätt image verkligen används.',
+    steps: [
+      'Kontrollera att imagen finns i ACR och att taggen är korrekt.',
+      'Sätt image-fältet i deploymenten till ACR-adressen.',
+      'Apply:a ändringen och kontrollera att nya poddar skapas.',
+      'Använd get, describe och logs för att bekräfta resultatet.',
+    ],
+    example: [
+      'Det här är det typiska steget mellan build/push och verklig drift.',
+      'En liten miss i image-namnet kan göra att deploymenten inte hittar rätt image.',
+    ],
+    expected: [
+      'Du ska förstå kedjan registry -> deployment -> pod.',
+      'Du ska veta hur du verifierar att deployment använder rätt tagg.',
+    ],
+    answer: [
+      'Facit: deploymenten ska peka på den image som ligger i ACR, och du verifierar det med kubectl-kommandon.',
+      'Facit: om image-namnet är fel kommer podden inte kunna starta som väntat.',
+    ],
+    mistakes: [
+      'Du glömmer att image-taggen i deploymenten måste matcha registry-taggen.',
+      'Du antar att en lokal image räcker i Kubernetes.',
+      'Du felsöker utan att kontrollera deploymentens faktiska image-fält.',
+    ],
+    quiz: [
+      {
+        question: 'Vad ska deploymentens image peka på?',
+        options: [
+          'ACR-adressen med rätt tagg',
+          'En lokal Dockerfile',
+          'En namespace',
+          'En service',
+        ],
+        answer: 'ACR-adressen med rätt tagg',
+      },
+      {
+        question: 'Vad är ett bra sätt att verifiera att rätt image används?',
+        options: ['kubectl get/describe/logs', 'docker tag', 'kubectl create ns', 'docker compose up'],
+        answer: 'kubectl get/describe/logs',
+      },
+    ],
+  },
+]
+
+export const lesson5Flashcards: Flashcard[] = [
+  {
+    tag: 'Registry',
+    question: 'Vad behöver du göra innan du pushar till ACR?',
+    answer: 'Bygga och tagga imagen med rätt registry-adress.',
+    options: [
+      'Bygga och tagga imagen med rätt registry-adress.',
+      'Skapa en namespace.',
+      'Skapa en ingress.',
+      'Läsa loggar.',
+    ],
+  },
+  {
+    tag: 'Namespace',
+    question: 'Varför använder man namespace?',
+    answer: 'För att hålla resurser organiserade och separerade.',
+    options: [
+      'För att hålla resurser organiserade och separerade.',
+      'För att bygga images snabbare.',
+      'För att skapa en service.',
+      'För att läsa pod-loggar.',
+    ],
+  },
+  {
+    tag: 'Debug',
+    question: 'Vad gör `kubectl describe`?',
+    answer: 'Visar detaljer och events om ett objekt.',
+    options: [
+      'Visar detaljer och events om ett objekt.',
+      'Pushar images till registry.',
+      'Skapar ett namespace.',
+      'Bygger en deployment.',
+    ],
+  },
+  {
+    tag: 'Debug',
+    question: 'Vad gör `kubectl logs`?',
+    answer: 'Visar loggar från en pod eller deployment.',
+    options: [
+      'Visar loggar från en pod eller deployment.',
+      'Skapar en service.',
+      'Sätter namespace.',
+      'Startar Docker Desktop.',
+    ],
+  },
+  {
+    tag: 'Readiness',
+    question: 'Vad styr readiness?',
+    answer: 'Om podden får trafik eller inte.',
+    options: [
+      'Om podden får trafik eller inte.',
+      'Om image kan byggas.',
+      'Om namespace finns.',
+      'Om registry är publikt.',
+    ],
+  },
+  {
+    tag: 'Liveness',
+    question: 'Vad styr liveness?',
+    answer: 'Om Kubernetes ska starta om podden.',
+    options: [
+      'Om Kubernetes ska starta om podden.',
+      'Om en ingress ska skapas.',
+      'Om data ska sparas i PVC.',
+      'Om en service ska existera.',
+    ],
+  },
+  {
+    tag: 'Service',
+    question: 'Vad gör en service?',
+    answer: 'Ger en stabil väg till pods via namn och port.',
+    options: [
+      'Ger en stabil väg till pods via namn och port.',
+      'Bygger en image.',
+      'Skapar ett namespace.',
+      'Hantera readiness.',
+    ],
+  },
+  {
+    tag: 'Deploy',
+    question: 'Vad är en deployment bra för?',
+    answer: 'Att hålla ett önskat antal repliker vid liv.',
+    options: [
+      'Att hålla ett önskat antal repliker vid liv.',
+      'Att skapa en secret.',
+      'Att skriva loggar.',
+      'Att mounta volymer.',
+    ],
+  },
+  {
+    tag: 'Probe',
+    question: 'Vad gör readiness?',
+    answer: 'Avgör om podden får trafik.',
+    options: [
+      'Avgör om podden får trafik.',
+      'Avgör om podden ska byggas.',
+      'Avgör om en service ska skapas.',
+      'Avgör om en volume kan mountas.',
+    ],
+  },
+  {
+    tag: 'Probe',
+    question: 'Vad gör liveness?',
+    answer: 'Avgör om Kubernetes ska starta om podden.',
+    options: [
+      'Avgör om Kubernetes ska starta om podden.',
+      'Avgör om traffic ska exponeras utanför klustret.',
+      'Avgör om image-taggen är korrekt.',
+      'Avgör om namespace ska skapas.',
+    ],
+  },
+  {
+    tag: 'ACR',
+    question: 'Vad behöver image-taggen matcha för ACR?',
+    answer: 'Registry-adressen.',
+    options: [
+      'Registry-adressen.',
+      'Pod-namnet.',
+      'Service-namnet.',
+      'Ingress-namnet.',
+    ],
   },
 ]
 
@@ -1295,6 +2235,8 @@ export const allFlashcards: Flashcard[] = [
   ...lesson1Flashcards,
   ...lesson2Flashcards,
   ...lesson3Flashcards,
+  ...lesson4Flashcards,
+  ...lesson5Flashcards,
 ]
 
 export const lesson1Exercises: Exercise[] = [
