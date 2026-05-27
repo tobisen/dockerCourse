@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { courseName, lessons, lesson1Flashcards } from '../data/course'
+import { courseName, lessons, lesson1Flashcards, lesson3Flashcards } from '../data/course'
 import { shuffleArray } from '../utils/shuffle'
 
 const route = useRoute()
@@ -9,7 +9,12 @@ const route = useRoute()
 const lessonId = computed(() => Number(route.params.id))
 const lesson = computed(() => lessons.find((item) => item.id === lessonId.value))
 const isLesson1 = computed(() => lessonId.value === 1)
-const sourceFlashcards = computed(() => (isLesson1.value ? lesson1Flashcards : []))
+const isLesson3 = computed(() => lessonId.value === 3)
+const sourceFlashcards = computed(() => {
+  if (isLesson1.value) return lesson1Flashcards
+  if (isLesson3.value) return lesson3Flashcards
+  return []
+})
 const flashcards = ref<typeof lesson1Flashcards>([])
 const selectedOptions = ref<(number | null)[]>([])
 
@@ -81,7 +86,7 @@ function resetChoice() {
         </p>
       </div>
 
-      <div v-if="isLesson1" class="flashcard-layout flashcard-layout-lesson">
+      <div v-if="isLesson1 || isLesson3" class="flashcard-layout flashcard-layout-lesson">
         <div class="flashcard-stage">
           <div class="flashcard-stack">
             <div class="flashcard flashcard-front">
@@ -142,7 +147,7 @@ function resetChoice() {
           <div class="set-list">
             <article class="set-card ready">
               <div class="set-card-top">
-                <h4>Lektion 1</h4>
+                <h4>{{ lesson?.title ?? `Lektion ${lessonId}` }}</h4>
                 <span class="set-pill">Ready</span>
               </div>
               <p>{{ flashcards.length }} kort med frågor, svarsalternativ och facit.</p>

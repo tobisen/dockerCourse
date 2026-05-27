@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { courseName, lessons, lesson1Topics, lesson2Topics } from '../data/course'
+import { courseName, lessons, lesson1Topics, lesson2Topics, lesson3Topics } from '../data/course'
 
 const route = useRoute()
 
@@ -10,9 +10,11 @@ const lesson = computed(() => lessons.find((item) => item.id === lessonId.value)
 const lessonNumber = computed(() => lessonId.value)
 const isLesson1 = computed(() => lessonId.value === 1)
 const isLesson2 = computed(() => lessonId.value === 2)
+const isLesson3 = computed(() => lessonId.value === 3)
 const topics = computed(() => {
   if (isLesson1.value) return lesson1Topics
   if (isLesson2.value) return lesson2Topics
+  if (isLesson3.value) return lesson3Topics
   return []
 })
 
@@ -40,6 +42,15 @@ const lesson2Resources = [
 const resources = computed(() => {
   if (isLesson1.value) return lesson1Resources
   if (isLesson2.value) return lesson2Resources
+  if (isLesson3.value) {
+    return [
+      {
+        label: 'Day 3 - Docker.pptx',
+        href: '/lesson-material/Day 3 - Docker.pptx',
+        description: 'Powerpointen för lektion 3.',
+      },
+    ]
+  }
   return []
 })
 </script>
@@ -71,11 +82,11 @@ const resources = computed(() => {
         </article>
         <article class="info-card">
           <h3>Status</h3>
-          <p>{{ isLesson1 || isLesson2 ? 'Färdig att plugga' : 'Kommer fyllas på' }}</p>
+          <p>{{ isLesson1 || isLesson2 || isLesson3 ? 'Färdig att plugga' : 'Kommer fyllas på' }}</p>
         </article>
       </div>
 
-      <div v-if="isLesson1 || isLesson2" class="lesson-summary">
+      <div v-if="isLesson1 || isLesson2 || isLesson3" class="lesson-summary">
         <div class="lesson-resources">
           <div class="section-heading compact">
             <h3>Resurser</h3>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { courseName, lesson1Exercises, lesson2Exercises, lessons } from '../data/course'
+import { courseName, lesson1Exercises, lesson2Exercises, lesson3Exercises, lessons } from '../data/course'
 import { shuffleArray } from '../utils/shuffle'
 
 const route = useRoute()
@@ -11,9 +11,11 @@ const exerciseId = computed(() => String(route.params.exerciseId ?? ''))
 const lesson = computed(() => lessons.find((item) => item.id === lessonId.value))
 const isLesson1 = computed(() => lessonId.value === 1)
 const isLesson2 = computed(() => lessonId.value === 2)
+const isLesson3 = computed(() => lessonId.value === 3)
 const exercises = computed(() => {
   if (isLesson1.value) return lesson1Exercises
   if (isLesson2.value) return lesson2Exercises
+  if (isLesson3.value) return lesson3Exercises
   return []
 })
 const exercise = computed(() => exercises.value.find((item) => item.id === exerciseId.value))

@@ -62,8 +62,9 @@ export const lessons: Lesson[] = [
   {
     id: 3,
     title: 'Lektion 3',
-    focus: 'Kommer fyllas med nästa del av kursen',
-    notes: 'Plats för teori, demo och praktiska begrepp.',
+    focus: 'Kubernetes-grunder, pods, YAML, deployments och services',
+    notes:
+      'Lektion 3 introducerar Kubernetes för utvecklare. Du lär dig kontroll plane och worker nodes, hur pods fungerar, hur du skapar dem med kubectl och YAML, hur deployments håller rätt antal repliker vid liv och hur services används för att nå pods stabilt. Vi kopplar också ihop verktygen med CLI, dokumentation och Azure Cloud Shell.',
   },
   {
     id: 4,
@@ -388,6 +389,357 @@ export const lesson2Exercises: Exercise[] = [
         question: 'Vad måste matcha för att en deployment ska hitta sina pods?',
         options: ['Labels och selector', 'Image och registry', 'Port och volume', 'Name och namespace'],
         answer: 'Labels och selector',
+      },
+    ],
+  },
+]
+
+export const lesson3Topics: Topic[] = [
+  {
+    title: 'Kubernetes cluster components',
+    details:
+      'Control plane styr klustret med api-server, etcd, scheduler och controller manager. Worker nodes kör själva workloads.',
+  },
+  {
+    title: 'Kubernetes CLI',
+    details:
+      'kubectl används för att prata med api-servern. I kursen används även Cloud Shell och officiell dokumentation som stöd.',
+  },
+  {
+    title: 'Vad är en pod',
+    details:
+      'En pod är den minsta enheten i OpenShift/Kubernetes och kan innehålla en eller flera tightly coupled containers.',
+  },
+  {
+    title: 'Skapa pods med kubectl run',
+    details:
+      'kubectl run är ett snabbt sätt att skapa en pod direkt från terminalen, ofta med --dry-run=client för att först titta på YAML.',
+  },
+  {
+    title: 'YAML för pods',
+    details:
+      'YAML beskriver ett önskat objektläge. Det är vanligt att utgå från kubectl run --dry-run=client -o yaml och justera filen.',
+  },
+  {
+    title: 'Deployments',
+    details:
+      'Deployments håller önskat läge, repliker och uppdateringar åt dig. De är rätt nivå för att köra flera poddar säkert.',
+  },
+  {
+    title: 'Services',
+    details:
+      'Eftersom pods kan bytas ut behöver man services för att få en stabil väg in till rätt pods och port.',
+  },
+  {
+    title: 'Nätverk och stateless',
+    details:
+      'Pods är tillfälliga resurser med egna IP-adresser. Services och labels hjälper andra komponenter att hitta dem även när de byts ut.',
+  },
+]
+
+export const lesson3Flashcards: Flashcard[] = [
+  {
+    tag: 'Kluster',
+    question: 'Vad är Kubernetes api-server?',
+    answer: 'Gränssnittet in till Kubernetes som tar emot och hanterar API-anrop.',
+    options: [
+      'Gränssnittet in till Kubernetes som tar emot och hanterar API-anrop.',
+      'Processen som kör bara containers på worker nodes.',
+      'Ett verktyg för att bygga images lokalt.',
+      'En typ av Kubernetes service för externa användare.',
+    ],
+  },
+  {
+    tag: 'Kluster',
+    question: 'Vad lagrar etcd?',
+    answer: 'Klustrets state och konfiguration.',
+    options: [
+      'Klustrets state och konfiguration.',
+      'Containerloggar från varje pod.',
+      'Alla Docker images i klustret.',
+      'Användarnas terminalhistorik.',
+    ],
+  },
+  {
+    tag: 'Pods',
+    question: 'Vad är en pod i Kubernetes?',
+    answer: 'Den minsta enheten som kan innehålla en eller flera tätt kopplade containers.',
+    options: [
+      'Den minsta enheten som kan innehålla en eller flera tätt kopplade containers.',
+      'En färdig deployment med tre repliker.',
+      'En lagringsplats för images.',
+      'Ett kommando för att bygga YAML-filer.',
+    ],
+  },
+  {
+    tag: 'CLI',
+    question: 'Vad gör `kubectl run`?',
+    answer: 'Skapar snabbt en pod direkt från terminalen.',
+    options: [
+      'Skapar snabbt en pod direkt från terminalen.',
+      'Pushar en image till registry.',
+      'Tar bort en namespace automatiskt.',
+      'Skapar en volume i Docker.',
+    ],
+  },
+  {
+    tag: 'CLI',
+    question: 'Vad betyder `--dry-run=client -o yaml`?',
+    answer: 'Att kommandot bara visar objektdefinitionen i YAML utan att skapa något.',
+    options: [
+      'Att kommandot bara visar objektdefinitionen i YAML utan att skapa något.',
+      'Att podden körs i bakgrunden.',
+      'Att resultatet skickas till registry.',
+      'Att Kubernetes automatiskt skalar podden.',
+    ],
+  },
+  {
+    tag: 'YAML',
+    question: 'Vad beskriver en Kubernetes YAML-fil?',
+    answer: 'Det önskade läget för ett objekt i klustret.',
+    options: [
+      'Det önskade läget för ett objekt i klustret.',
+      'Den exakta historiken för alla tidigare pods.',
+      'En lista över Docker volumes.',
+      'En färdig bash-scriptfil.',
+    ],
+  },
+  {
+    tag: 'Deployment',
+    question: 'Vad är en deployment bra för?',
+    answer: 'Att hålla ett önskat antal repliker vid liv och hantera uppdateringar.',
+    options: [
+      'Att hålla ett önskat antal repliker vid liv och hantera uppdateringar.',
+      'Att bygga images snabbare.',
+      'Att skapa en pod-loggfil.',
+      'Att lagra miljövariabler permanent.',
+    ],
+  },
+  {
+    tag: 'Service',
+    question: 'Varför använder man en service?',
+    answer: 'För att nå pods stabilt via namn och port även om poddar byts ut.',
+    options: [
+      'För att nå pods stabilt via namn och port även om poddar byts ut.',
+      'För att skapa en ny image från en Dockerfile.',
+      'För att ta bort gamla pods automatiskt.',
+      'För att skriva kubectl-kommandon snabbare.',
+    ],
+  },
+  {
+    tag: 'Nätverk',
+    question: 'Varför är pods svåra att adressera direkt långsiktigt?',
+    answer: 'För att deras IP-adresser kan ändras när de byts ut.',
+    options: [
+      'För att deras IP-adresser kan ändras när de byts ut.',
+      'För att de aldrig får någon IP-adress.',
+      'För att Kubernetes förbjuder nätverk mellan pods.',
+      'För att en pod alltid är samma sak som en namespace.',
+    ],
+  },
+  {
+    tag: 'Roller',
+    question: 'Vad är worker nodes ansvariga för?',
+    answer: 'Att köra de faktiska poddarna och workloads.',
+    options: [
+      'Att köra de faktiska poddarna och workloads.',
+      'Att lagra cluster state i etcd.',
+      'Att skapa Docker images.',
+      'Att skriva YAML-filer åt dig.',
+    ],
+  },
+]
+
+export const lesson3Exercises: Exercise[] = [
+  {
+    id: 'cluster-components',
+    title: 'Lär dig cluster-komponenterna',
+    goal: 'Förstå vad control plane och worker nodes gör.',
+    prompt:
+      'Gå igenom komponenterna i ett Kubernetes-kluster och förklara vad api-server, etcd, scheduler, controller manager och kubelet gör.',
+    steps: [
+      'Läs igenom översikten över cluster components i powerpointen.',
+      'Dela upp komponenterna i control plane och worker node.',
+      'Skriv ner en kort mening om vad varje komponent ansvarar för.',
+    ],
+    example: [
+      'api-servern är ingången till klustret.',
+      'etcd lagrar klustrets state.',
+      'kubelet ser till att det som ska köras på node:n faktiskt körs.',
+    ],
+    expected: [
+      'Du ska kunna skilja på control plane och worker node.',
+      'Du ska förstå att Kubernetes är deklarativt och håller koll på cluster state.',
+    ],
+    answer: [
+      'Facit: control plane styr klustret, worker nodes kör workloaden.',
+      'Facit: scheduler väljer node för nya pods och controller manager ser till att önskat läge hålls.',
+    ],
+    mistakes: [
+      'Du blandar ihop api-servern med en vanlig appserver.',
+      'Du tror att worker nodes styr klustret.',
+      'Du glömmer att etcd är den del som lagrar state.',
+    ],
+    quiz: [
+      {
+        question: 'Vilken komponent är gränssnittet in till Kubernetes?',
+        options: ['api-server', 'kubelet', 'etcd', 'busybox'],
+        answer: 'api-server',
+      },
+      {
+        question: 'Vad lagrar klustrets state?',
+        options: ['etcd', 'scheduler', 'kube-proxy', 'CoreDNS'],
+        answer: 'etcd',
+      },
+    ],
+  },
+  {
+    id: 'create-pod-run',
+    title: 'Skapa en pod med kubectl run',
+    goal: 'Bli bekväm med den snabbaste vägen till en pod.',
+    prompt:
+      'Använd `kubectl run` för att skapa en enkel nginx- eller httpd-pod och använd `--dry-run=client -o yaml` för att se hur objektet ser ut.',
+    steps: [
+      'Kör ett testkommando som `kubectl run nginx --image=nginx --port=80 --dry-run=client -o yaml`.',
+      'Kontrollera YAML-outputen och identifiera metadata och spec.',
+      'Om du vill, skapa objektet på riktigt genom att ta bort dry-run-delen.',
+    ],
+    example: [
+      'Dry-run är perfekt när du vill lära dig kommandot utan att direkt skapa något i klustret.',
+      'Det är vanligt att använda `kubectl run` för snabba tester och sedan gå över till YAML.',
+    ],
+    expected: [
+      'Du ska kunna se hur ett kommando översätts till YAML.',
+      'Du ska förstå att dry-run inte skapar något i klustret.',
+    ],
+    answer: [
+      'Facit: `kubectl run` kan skapa en pod direkt från terminalen.',
+      'Facit: `--dry-run=client -o yaml` visar bara objektdefinitionen.',
+    ],
+    mistakes: [
+      'Du tror att dry-run skapar podden på riktigt.',
+      'Du glömmer att ange image och får ett ofullständigt kommando.',
+      'Du blandar ihop kubectl run med docker run.',
+    ],
+    quiz: [
+      {
+        question: 'Vad visar `--dry-run=client -o yaml`?',
+        options: [
+          'Objektdefinitionen utan att skapa något',
+          'En körande pod',
+          'Listan på images lokalt',
+          'Kubernetes logs',
+        ],
+        answer: 'Objektdefinitionen utan att skapa något',
+      },
+      {
+        question: 'Vad används `kubectl run` ofta till?',
+        options: [
+          'Snabba podtester',
+          'Bygga images',
+          'Skapa Docker volumes',
+          'Radera deployments',
+        ],
+        answer: 'Snabba podtester',
+      },
+    ],
+  },
+  {
+    id: 'pod-yaml-httpd',
+    title: 'Skapa en httpd-pod med YAML',
+    goal: 'Förstå hur en pod beskrivs deklarativt i YAML.',
+    prompt:
+      'Ta en kubectl-run/YAML-startpunkt och skapa en enkel pod-definition för `httpd` som du kan använda i klustret.',
+    steps: [
+      'Börja med att generera YAML med `kubectl run ... --dry-run=client -o yaml`.',
+      'Spara outputen i en fil, till exempel `pod.yaml`.',
+      'Läs igenom `apiVersion`, `kind`, `metadata` och `spec`.',
+      'Skapa podden med `kubectl apply -f pod.yaml`.',
+    ],
+    example: [
+      'YAML är bra när du vill lagra konfiguration i filer i stället för i terminalhistoriken.',
+      'En pod-definition behöver namn, image och container-spec.',
+    ],
+    expected: [
+      'Du ska förstå strukturen i en pod-YAML.',
+      'Du ska kunna förklara varför deklarativ konfiguration är användbar.',
+    ],
+    answer: [
+      'Facit: en pod är ett Kubernetes-objekt som beskrivs i YAML eller JSON.',
+      'Facit: `kubectl apply -f` används för att skapa eller uppdatera objekt från fil.',
+    ],
+    mistakes: [
+      'Du tror att YAML är shell-script.',
+      'Du glömmer att beskriva containers i specen.',
+      'Du blandar ihop `create` och `apply` utan att förstå vad som är deklarativt.',
+    ],
+    quiz: [
+      {
+        question: 'Vad är YAML i Kubernetes?',
+        options: [
+          'En deklaration av önskat läge',
+          'Ett kommandospråk för images',
+          'En loggfil för pods',
+          'Ett sätt att bygga containers',
+        ],
+        answer: 'En deklaration av önskat läge',
+      },
+      {
+        question: 'Vilket kommando skapar eller uppdaterar objekt från fil?',
+        options: ['kubectl apply -f', 'docker build', 'kubectl logs', 'docker push'],
+        answer: 'kubectl apply -f',
+      },
+    ],
+  },
+  {
+    id: 'deployment-and-service',
+    title: 'Deployment och service',
+    goal: 'Träna på hur poddar skalar och nås stabilt.',
+    prompt:
+      'Wrapa en pod i en deployment med 3 repliker och skapa en service som låter andra pods hitta den.',
+    steps: [
+      'Börja med en fungerande pod-definition.',
+      'Byt till `kind: Deployment` och lägg till `replicas: 3`.',
+      'Se till att labels och selector matchar.',
+      'Skapa en service som pekar på rätt label och port.',
+    ],
+    example: [
+      'Deployments hjälper dig att hålla rätt antal poddar vid liv.',
+      'Services ger en stabil adress även om poddar byts ut.',
+    ],
+    expected: [
+      'Du ska förstå att deployment styr desired state.',
+      'Du ska förstå att service används för att nå pods via namn och port.',
+    ],
+    answer: [
+      'Facit: deployment håller önskat antal repliker igång och återskapar pods om de dör.',
+      'Facit: service använder labels för att hitta rätt pods och ge en stabil ingång.',
+    ],
+    mistakes: [
+      'Du glömmer att labels och selector måste matcha.',
+      'Du tror att pods själva har en stabil långsiktig identitet.',
+      'Du försöker kommunicera direkt med en pod-IP utan att tänka på att den kan ändras.',
+    ],
+    quiz: [
+      {
+        question: 'Vad gör en deployment?',
+        options: [
+          'Håller önskat antal repliker vid liv',
+          'Bygger images',
+          'Exponerar portar på hosten',
+          'Skapar Docker volumes',
+        ],
+        answer: 'Håller önskat antal repliker vid liv',
+      },
+      {
+        question: 'Vad används en service till?',
+        options: [
+          'Att nå pods stabilt via namn och port',
+          'Att bygga en pod från scratch',
+          'Att lagra data permanent',
+          'Att skriva kubelet-loggar',
+        ],
+        answer: 'Att nå pods stabilt via namn och port',
       },
     ],
   },

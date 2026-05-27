@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { courseName, lessons, lesson1Exercises, lesson2Exercises } from '../data/course'
+import { courseName, lessons, lesson1Exercises, lesson2Exercises, lesson3Exercises } from '../data/course'
 import { shuffleArray } from '../utils/shuffle'
 
 const route = useRoute()
@@ -10,9 +10,11 @@ const lessonId = computed(() => Number(route.params.id))
 const lesson = computed(() => lessons.find((item) => item.id === lessonId.value))
 const isLesson1 = computed(() => lessonId.value === 1)
 const isLesson2 = computed(() => lessonId.value === 2)
+const isLesson3 = computed(() => lessonId.value === 3)
 const exercises = computed(() => {
   if (isLesson1.value) return lesson1Exercises
   if (isLesson2.value) return lesson2Exercises
+  if (isLesson3.value) return lesson3Exercises
   return []
 })
 const shuffledExercises = computed(() => shuffleArray(exercises.value))
@@ -34,7 +36,7 @@ const shuffledExercises = computed(() => shuffleArray(exercises.value))
         <p>Här tränar du aktivt på innehållet från lektionen med korta, praktiska uppgifter.</p>
       </div>
 
-      <div v-if="isLesson1 || isLesson2" class="exercise-section">
+      <div v-if="isLesson1 || isLesson2 || isLesson3" class="exercise-section">
         <div class="section-heading compact">
           <p class="eyebrow">{{ lesson?.title ?? `Lektion ${lessonId}` }}</p>
           <h3>Föreslagna övningar</h3>
