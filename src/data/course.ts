@@ -56,8 +56,9 @@ export const lessons: Lesson[] = [
   {
     id: 2,
     title: 'Lektion 2',
-    focus: 'Kommer fyllas med nästa del av kursen',
-    notes: 'Plats för teori, demo och praktiska begrepp.',
+    focus: 'Design av appar med Docker, volymer, säkerhet och första Kubernetes-kopplingen',
+    notes:
+      'Lektion 2 går djupare in i hur du designar en app för Docker och hur du tänker kring repository, stateless containers, volymer, bind mounts, loggar och säkerhet. Vi tittar också på hur Docker leder vidare in i Kubernetes med pods, YAML och deployments.',
   },
   {
     id: 3,
@@ -392,6 +393,219 @@ export const lesson2Exercises: Exercise[] = [
       },
     ],
   },
+  {
+    id: 'compose-stack',
+    title: 'Bygg en enkel Compose-stack',
+    goal: 'Förstå när flera containers ska startas tillsammans.',
+    prompt:
+      'Skapa en enkel Docker Compose-fil med två tjänster, till exempel en app och en databas, och förklara varför Compose är bättre än att starta allt för hand.',
+    steps: [
+      'Bestäm vilka två tjänster som ska ingå i stacken.',
+      'Skriv en `docker-compose.yml` med `services` för båda.',
+      'Koppla eventuell volym eller miljövariabel till tjänsterna.',
+      'Starta stacken med `docker compose up -d` och kontrollera resultatet.',
+    ],
+    example: [
+      'Compose är bra när flera containers hör ihop och du vill starta dem som en enhet.',
+      'En databas och en backend är ett vanligt exempel.',
+    ],
+    expected: [
+      'Du ska kunna förklara hur Compose hjälper dig att hålla koll på flera containers.',
+      'Du ska förstå att varje service i Compose i praktiken är en separat container.',
+    ],
+    answer: [
+      'Facit: Compose används när du vill beskriva flera tjänster i samma fil och starta dem tillsammans.',
+      'Facit: varje service i filen blir normalt en egen container med gemensamma nätverk och tydlig struktur.',
+    ],
+    mistakes: [
+      'Du försöker lägga allt i en enda container trots att tjänsterna är separata.',
+      'Du glömmer att definiera nätverk eller volym när tjänsterna behöver prata med varandra.',
+      'Du tror att Compose är samma sak som en Dockerfile.',
+    ],
+    quiz: [
+      {
+        question: 'När använder man Docker Compose?',
+        options: [
+          'När flera containers hör ihop',
+          'När man bara vill skriva en Dockerfile',
+          'När man ska pusha en image till registry',
+          'När man vill skapa en pod i Kubernetes',
+        ],
+        answer: 'När flera containers hör ihop',
+      },
+      {
+        question: 'Vad beskriver en Compose-fil?',
+        options: [
+          'Tjänster som ska startas tillsammans',
+          'En enskild Docker image',
+          'En Kubernetes deployment',
+          'En containerlogg',
+        ],
+        answer: 'Tjänster som ska startas tillsammans',
+      },
+    ],
+  },
+  {
+    id: 'debug-container',
+    title: 'Felsök en container med inspect och logs',
+    goal: 'Bli trygg med de viktigaste felsökningskommandona.',
+    prompt:
+      'Starta en container, felsök den med loggar och inspect och förklara vad du letar efter när något inte fungerar.',
+    steps: [
+      'Starta en container och ge den ett tydligt namn.',
+      'Läs loggarna med `docker logs <namn>`.',
+      'Titta på detaljer med `docker inspect <namn>`.',
+      'Försök hitta ports, environment och status i outputen.',
+    ],
+    example: [
+      'Om en tjänst inte svarar är loggarna ofta snabbaste vägen till orsaken.',
+      'Inspect är mer detaljerad än ps och visar teknisk konfiguration.',
+    ],
+    expected: [
+      'Du ska veta när du ska använda logs och när du ska använda inspect.',
+      'Du ska förstå att inspect hjälper dig hitta vad Docker faktiskt startade.',
+    ],
+    answer: [
+      'Facit: `docker logs` visar output från containern och `docker inspect` visar teknisk metadata.',
+      'Facit: tillsammans ger de dig en bra första felsökningsbild.',
+    ],
+    mistakes: [
+      'Du går direkt till att gissa i stället för att läsa loggar.',
+      'Du försöker läsa inspect som om det vore en kort sammanfattning.',
+      'Du blandar ihop containerstatus och image-information.',
+    ],
+    quiz: [
+      {
+        question: 'Vilket kommando visar teknisk metadata om en container?',
+        options: ['docker inspect', 'docker push', 'docker tag', 'docker build'],
+        answer: 'docker inspect',
+      },
+      {
+        question: 'Vilket kommando visar vad containern skriver ut?',
+        options: ['docker logs', 'docker volume ls', 'docker compose', 'docker run'],
+        answer: 'docker logs',
+      },
+    ],
+  },
+]
+
+export const lesson2Flashcards: Flashcard[] = [
+  {
+    tag: 'Flöde',
+    question: 'Vilken ordning är rätt för att få ut en image i ett registry?',
+    answer: 'Build -> tag -> login -> push.',
+    options: [
+      'Build -> tag -> login -> push.',
+      'Login -> build -> push -> tag.',
+      'Push -> login -> tag -> build.',
+      'Tag -> push -> login -> build.',
+    ],
+  },
+  {
+    tag: 'Lagring',
+    question: 'Varför använder man volymer i Docker?',
+    answer: 'För att spara data utanför den tillfälliga containern.',
+    options: [
+      'För att spara data utanför den tillfälliga containern.',
+      'För att bygga images snabbare.',
+      'För att skapa flera pods automatiskt.',
+      'För att byta namn på registry.',
+    ],
+  },
+  {
+    tag: 'Lagring',
+    question: 'Vad är en bind mount?',
+    answer: 'En koppling till en mapp på hosten.',
+    options: [
+      'En koppling till en mapp på hosten.',
+      'En intern Kubernetes service.',
+      'En image-tag som skickas till registry.',
+      'En typ av Docker build command.',
+    ],
+  },
+  {
+    tag: 'Felsökning',
+    question: 'Vad använder du för att läsa loggar från en container?',
+    answer: 'docker logs',
+    options: ['docker logs', 'docker run', 'docker tag', 'docker push'],
+  },
+  {
+    tag: 'Säkerhet',
+    question: 'Varför måste man vara försiktig med mounts och behörigheter?',
+    answer: 'För att Docker ofta kör med höga rättigheter och fel mount kan bli en säkerhetsrisk.',
+    options: [
+      'För att Docker ofta kör med höga rättigheter och fel mount kan bli en säkerhetsrisk.',
+      'För att images annars inte går att bygga.',
+      'För att volumes bara fungerar i Kubernetes.',
+      'För att loggar då försvinner automatiskt.',
+    ],
+  },
+  {
+    tag: 'Kubernetes',
+    question: 'Vad beskriver YAML i Kubernetes?',
+    answer: 'Det önskade läget för objektet.',
+    options: [
+      'Det önskade läget för objektet.',
+      'En containerlogg från podden.',
+      'En image som redan körs.',
+      'En volume i Docker Desktop.',
+    ],
+  },
+  {
+    tag: 'Pods',
+    question: 'Vad är en pod?',
+    answer: 'Den minsta enheten i Kubernetes som kan innehålla en eller flera containers.',
+    options: [
+      'Den minsta enheten i Kubernetes som kan innehålla en eller flera containers.',
+      'En typ av Docker image.',
+      'Ett kommando för att pusha images.',
+      'En lagringsplats för loggar.',
+    ],
+  },
+  {
+    tag: 'Deployment',
+    question: 'Vad gör en deployment?',
+    answer: 'Håller önskat antal repliker vid liv och underlättar uppdateringar.',
+    options: [
+      'Håller önskat antal repliker vid liv och underlättar uppdateringar.',
+      'Bygger en image från Dockerfile.',
+      'Skapar en volume på hosten.',
+      'Visar loggar i realtid.',
+    ],
+  },
+  {
+    tag: 'Compose',
+    question: 'Vad används Docker Compose till?',
+    answer: 'Att beskriva och starta flera containers som hör ihop.',
+    options: [
+      'Att beskriva och starta flera containers som hör ihop.',
+      'Att bygga en image från ett registry.',
+      'Att skapa Kubernetes service discovery.',
+      'Att skriva loggar till en fil.',
+    ],
+  },
+  {
+    tag: 'Felsökning',
+    question: 'Vad gör `docker inspect`?',
+    answer: 'Visar teknisk metadata om en container.',
+    options: [
+      'Visar teknisk metadata om en container.',
+      'Skapar en ny volume automatiskt.',
+      'Pushar image till registry.',
+      'Startar en pod i Kubernetes.',
+    ],
+  },
+  {
+    tag: 'Underhåll',
+    question: 'Varför är cleanup efter övningar bra?',
+    answer: 'För att hålla ordning och undvika att gamla resurser skapar förvirring.',
+    options: [
+      'För att hålla ordning och undvika att gamla resurser skapar förvirring.',
+      'För att Docker då bygger snabbare images automatiskt.',
+      'För att registry blir snabbare.',
+      'För att kubelet annars slutar fungera.',
+    ],
+  },
 ]
 
 export const lesson3Topics: Topic[] = [
@@ -546,6 +760,39 @@ export const lesson3Flashcards: Flashcard[] = [
       'Att lagra cluster state i etcd.',
       'Att skapa Docker images.',
       'Att skriva YAML-filer åt dig.',
+    ],
+  },
+  {
+    tag: 'Service',
+    question: 'Vad gör en Kubernetes service?',
+    answer: 'Ger en stabil väg till pods via namn och port.',
+    options: [
+      'Ger en stabil väg till pods via namn och port.',
+      'Bygger images i registry.',
+      'Skapar en ny control plane.',
+      'Tar bort pods automatiskt.',
+    ],
+  },
+  {
+    tag: 'Namespace',
+    question: 'Varför använder man namespaces?',
+    answer: 'För att hålla resurser organiserade och separerade.',
+    options: [
+      'För att hålla resurser organiserade och separerade.',
+      'För att göra Dockerfiles kortare.',
+      'För att lagra pods permanent.',
+      'För att få snabbare nätverk mellan containers.',
+    ],
+  },
+  {
+    tag: 'CLI',
+    question: 'Vad gör `kubectl apply -f`?',
+    answer: 'Skapar eller uppdaterar objekt från en fil.',
+    options: [
+      'Skapar eller uppdaterar objekt från en fil.',
+      'Startar en container i Docker.',
+      'Bygger ett registry.',
+      'Visar podloggar i realtid.',
     ],
   },
 ]
@@ -740,6 +987,103 @@ export const lesson3Exercises: Exercise[] = [
           'Att skriva kubelet-loggar',
         ],
         answer: 'Att nå pods stabilt via namn och port',
+      },
+    ],
+  },
+  {
+    id: 'namespace-and-context',
+    title: 'Byt namespace och håll struktur',
+    goal: 'Förstå hur du organiserar resurser i Kubernetes.',
+    prompt:
+      'Skapa ett namespace, byt default-namespace i din context och kontrollera att resurserna hamnar på rätt ställe.',
+    steps: [
+      'Skapa ett namespace med `kubectl create namespace ...`.',
+      'Byt context med `kubectl config set-context --current --namespace=...`.',
+      'Skapa eller lista en pod för att kontrollera att du använder rätt namespace.',
+    ],
+    example: [
+      'Namespace är användbart när du vill skilja appar, miljöer eller team åt.',
+      'Det gör det lättare att hålla ordning i ett kluster som växer.',
+    ],
+    expected: [
+      'Du ska förstå att namespace är en organisatorisk gräns.',
+      'Du ska kunna byta standard-namespace för dina kubectl-kommandon.',
+    ],
+    answer: [
+      'Facit: namespace hjälper dig att hålla resurser separerade i samma kluster.',
+      'Facit: `kubectl config set-context` används för att byta standard-namespace i din session.',
+    ],
+    mistakes: [
+      'Du skapar allt i default namespace utan att tänka på struktur.',
+      'Du tror att namespace är samma sak som en pod.',
+      'Du glömmer att kontrollera vilken namespace kommandot faktiskt använder.',
+    ],
+    quiz: [
+      {
+        question: 'Varför använder man namespaces?',
+        options: [
+          'För att hålla resurser separerade',
+          'För att bygga images snabbare',
+          'För att skapa Docker volumes',
+          'För att starta pods i bakgrunden',
+        ],
+        answer: 'För att hålla resurser separerade',
+      },
+      {
+        question: 'Vilket kommando kan byta default-namespace?',
+        options: [
+          'kubectl config set-context',
+          'docker tag',
+          'kubectl logs',
+          'docker compose up',
+        ],
+        answer: 'kubectl config set-context',
+      },
+    ],
+  },
+  {
+    id: 'service-discovery',
+    title: 'Skapa och testa en service',
+    goal: 'Förstå hur pods nås stabilt via service.',
+    prompt:
+      'Skapa en service för en pod och förklara hur labels och selector gör att den hittar rätt pods.',
+    steps: [
+      'Ge podden rätt labels.',
+      'Skapa en service som selector samma labels.',
+      'Testa att nå servicen med namn och port.',
+    ],
+    example: [
+      'Service ger en stabil väg till en dynamisk grupp av pods.',
+      'Den fungerar som en mellanhand när poddar byts ut eller skalas.',
+    ],
+    expected: [
+      'Du ska förstå att service inte är samma sak som en pod.',
+      'Du ska förstå att labels och selector kopplar servicen till rätt pods.',
+    ],
+    answer: [
+      'Facit: service används för att nå pods via ett stabilt namn och port.',
+      'Facit: labels och selector är det som binder ihop service med rätt pods.',
+    ],
+    mistakes: [
+      'Du försöker använda pod-IP direkt trots att den kan ändras.',
+      'Du glömmer att labels och selector måste matcha.',
+      'Du tror att service lagrar data eller skalar pods.',
+    ],
+    quiz: [
+      {
+        question: 'Vad gör en service i Kubernetes?',
+        options: [
+          'Ger en stabil väg till pods',
+          'Bygger en image',
+          'Skapar ett namespace',
+          'Startar Docker Desktop',
+        ],
+        answer: 'Ger en stabil väg till pods',
+      },
+      {
+        question: 'Vad används för att koppla service till pods?',
+        options: ['Labels och selector', 'Dockerfile och image', 'Volumes och mounts', 'Tags och registry'],
+        answer: 'Labels och selector',
       },
     ],
   },
@@ -945,6 +1289,12 @@ export const lesson1Flashcards: Flashcard[] = [
       'Kubernetes används bara för att göra Dockerfile enklare.',
     ],
   },
+]
+
+export const allFlashcards: Flashcard[] = [
+  ...lesson1Flashcards,
+  ...lesson2Flashcards,
+  ...lesson3Flashcards,
 ]
 
 export const lesson1Exercises: Exercise[] = [

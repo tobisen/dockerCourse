@@ -1,25 +1,16 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
-import { courseName, lessons, lesson1Flashcards, lesson2Flashcards, lesson3Flashcards } from '../data/course'
+import { computed, ref } from 'vue'
+import { RouterLink } from 'vue-router'
+import { allFlashcards, courseName, lessons } from '../data/course'
 import { shuffleArray } from '../utils/shuffle'
 
-const route = useRoute()
+const lessonLabel = computed(() => lessons
+  .filter((lesson) => lesson.id <= 3)
+  .map((lesson) => lesson.title)
+  .join(' + '))
 
-const lessonId = computed(() => Number(route.params.id))
-const lesson = computed(() => lessons.find((item) => item.id === lessonId.value))
-const isLesson1 = computed(() => lessonId.value === 1)
-const isLesson2 = computed(() => lessonId.value === 2)
-const isLesson3 = computed(() => lessonId.value === 3)
-const sourceFlashcards = computed(() => {
-  if (isLesson1.value) return lesson1Flashcards
-  if (isLesson2.value) return lesson2Flashcards
-  if (isLesson3.value) return lesson3Flashcards
-  return []
-})
-const flashcards = ref<typeof lesson1Flashcards>([])
+const flashcards = ref<typeof allFlashcards>([])
 const selectedOptions = ref<(number | null)[]>([])
-
 const activeIndex = ref(0)
 
 const activeFlashcard = computed(() => flashcards.value[activeIndex.value])
@@ -37,7 +28,7 @@ const correctCount = computed(() =>
 
 function resetFlashcards() {
   flashcards.value = shuffleArray(
-    sourceFlashcards.value.map((card) => ({
+    allFlashcards.map((card) => ({
       ...card,
       options: shuffleArray(card.options),
     })),
@@ -46,7 +37,7 @@ function resetFlashcards() {
   activeIndex.value = 0
 }
 
-watch(sourceFlashcards, resetFlashcards, { immediate: true })
+resetFlashcards()
 
 function nextCard() {
   activeIndex.value = (activeIndex.value + 1) % flashcards.value.length
@@ -74,21 +65,16 @@ function resetChoice() {
     <section class="content-grid lesson-page">
       <div class="section-heading">
         <div class="lesson-action-row">
-          <RouterLink :to="`/lektion/${lessonId}`" class="page-link-button">
-            Till lektionssidan
-          </RouterLink>
-          <RouterLink :to="`/lektion/${lessonId}/ovningar`" class="page-link-button">
-            Övningar
-          </RouterLink>
+          <RouterLink to="/" class="page-link-button">Till startsidan</RouterLink>
+          <RouterLink to="/lektion/1" class="page-link-button">Till lektion 1</RouterLink>
         </div>
-        <h2>Flashcards för {{ lesson?.title ?? `Lektion ${lessonId}` }}</h2>
+        <h2>Alla flashcards</h2>
         <p>
-          Här kan du plugga lektionen med ett kort i taget. Välj ett svar, se facit direkt och
-          bläddra vidare när du vill.
+          Här finns en samlad kortlek med allt flashcard-material vi har för {{ lessonLabel }}.
         </p>
       </div>
 
-      <div v-if="isLesson1 || isLesson2 || isLesson3" class="flashcard-layout flashcard-layout-lesson">
+      <div class="flashcard-layout flashcard-layout-lesson">
         <div class="flashcard-stage">
           <div class="flashcard-stack">
             <div class="flashcard flashcard-front">
@@ -136,38 +122,28 @@ function resetChoice() {
           <div class="section-heading compact">
             <h3>Vad du tränar på</h3>
             <p>
-              Det här setet täcker grunderna från
-              {{ lesson?.title ?? `Lektion ${lessonId}` }} och är byggt för snabb repetition.
+              Det här setet samlar flashcards från lektion 1 till 3 i en gemensam kortlek.
             </p>
           </div>
 
           <div class="info-card flashcard-score-card">
             <h3>Din poäng</h3>
             <p>{{ correctCount }} / {{ flashcards.length }} rätt</p>
-            <p class="flashcard-score-note">
-              Poängen nollställs när du öppnar flashcards igen.
-            </p>
+            <p class="flashcard-score-note">Poängen nollställs när du öppnar sidan igen.</p>
           </div>
 
           <div class="set-list">
             <article class="set-card ready">
               <div class="set-card-top">
-                <h4>{{ lesson?.title ?? `Lektion ${lessonId}` }}</h4>
+                <h4>Alla lektioner</h4>
                 <span class="set-pill">Ready</span>
               </div>
-              <p>{{ flashcards.length }} kort med frågor, svarsalternativ och facit.</p>
+              <p>{{ flashcards.length }} kort i en gemensam blandning.</p>
               <strong>Aktiv kortlek</strong>
             </article>
           </div>
         </aside>
       </div>
-
-      <article v-else class="info-card">
-        <h3>Ingen kortlek ännu</h3>
-        <p>Det här lektionssetet är tomt tills vi fyller på med innehåll.</p>
-      </article>
-
-      <RouterLink :to="`/lektion/${lessonId}`" class="back-link">Tillbaka till lektionen</RouterLink>
     </section>
   </main>
 </template>

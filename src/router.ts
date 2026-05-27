@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomePage from './components/HomePage.vue'
+import AllFlashcardsPage from './components/AllFlashcardsPage.vue'
 import ExercisePage from './components/ExercisePage.vue'
 import ExerciseHelpPage from './components/ExerciseHelpPage.vue'
 import FlashcardsPage from './components/FlashcardsPage.vue'
@@ -11,6 +12,10 @@ export const router = createRouter({
     {
       path: '/',
       component: HomePage,
+    },
+    {
+      path: '/flashcards',
+      component: AllFlashcardsPage,
     },
     {
       path: '/lektion/:id',
