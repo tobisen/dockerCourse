@@ -117,10 +117,29 @@ const correctCount = computed(() =>
         </div>
 
         <div class="exercise-help-card">
-          <p class="eyebrow">Facit</p>
-          <ul class="help-list">
-            <li v-for="item in exercise.answer" :key="item">{{ item }}</li>
-          </ul>
+          <p class="eyebrow">Facit och genomgång</p>
+          <div class="solution-guide">
+            <section class="solution-section">
+              <h3>Kort svar</h3>
+              <ul class="help-list">
+                <li v-for="item in exercise.answer" :key="item">{{ item }}</li>
+              </ul>
+            </section>
+
+            <section class="solution-section">
+              <h3>Så gör du</h3>
+              <ol class="help-list ordered">
+                <li v-for="item in exercise.steps" :key="item">{{ item }}</li>
+              </ol>
+            </section>
+
+            <section class="solution-section">
+              <h3>Kontrollera att</h3>
+              <ul class="help-list">
+                <li v-for="item in exercise.expected" :key="item">{{ item }}</li>
+              </ul>
+            </section>
+          </div>
         </div>
 
         <div class="exercise-help-card">

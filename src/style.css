@@ -441,6 +441,24 @@ a {
   color: var(--text-soft);
 }
 
+.solution-guide {
+  display: grid;
+  gap: 16px;
+}
+
+.solution-section {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.solution-section h3 {
+  font-size: 1rem;
+}
+
 .summary-item {
   display: grid;
   gap: 6px;
