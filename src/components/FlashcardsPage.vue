@@ -9,6 +9,7 @@ import {
   lesson3Flashcards,
   lesson4Flashcards,
   lesson5Flashcards,
+  lesson6Flashcards,
 } from '../data/course'
 import { shuffleArray } from '../utils/shuffle'
 
@@ -21,12 +22,14 @@ const isLesson2 = computed(() => lessonId.value === 2)
 const isLesson3 = computed(() => lessonId.value === 3)
 const isLesson4 = computed(() => lessonId.value === 4)
 const isLesson5 = computed(() => lessonId.value === 5)
+const isLesson6 = computed(() => lessonId.value === 6)
 const sourceFlashcards = computed(() => {
   if (isLesson1.value) return lesson1Flashcards
   if (isLesson2.value) return lesson2Flashcards
   if (isLesson3.value) return lesson3Flashcards
   if (isLesson4.value) return lesson4Flashcards
   if (isLesson5.value) return lesson5Flashcards
+  if (isLesson6.value) return lesson6Flashcards
   return []
 })
 const flashcards = ref<typeof lesson1Flashcards>([])
@@ -100,7 +103,7 @@ function resetChoice() {
         </p>
       </div>
 
-      <div v-if="isLesson1 || isLesson2 || isLesson3 || isLesson4 || isLesson5" class="flashcard-layout flashcard-layout-lesson">
+      <div v-if="isLesson1 || isLesson2 || isLesson3 || isLesson4 || isLesson5 || isLesson6" class="flashcard-layout flashcard-layout-lesson">
         <div class="flashcard-stage">
           <div class="flashcard-stack">
             <div class="flashcard flashcard-front">

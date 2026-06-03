@@ -84,8 +84,9 @@ export const lessons: Lesson[] = [
   {
     id: 6,
     title: 'Lektion 6',
-    focus: 'Kommer fyllas med nästa del av kursen',
-    notes: 'Plats för teori, demo och praktiska begrepp.',
+    focus: 'Helm, GitOps och Argo CD för modern Kubernetes-leverans',
+    notes:
+      'Lektion 6 går igenom Helm som paketmanager för Kubernetes, varför GitOps gör drift mer spårbar och hur Argo CD synkar kluster med Git. Du lär dig också flödet från source code till manifests och vidare till automatisk deployment i klustret.',
   },
 ]
 
@@ -1591,6 +1592,594 @@ export const lesson5Flashcards: Flashcard[] = [
   },
 ]
 
+export const lesson6Topics: Topic[] = [
+  {
+    title: 'Helm',
+    details:
+      'Helm är paketmanager för Kubernetes och används för att paketera återanvändbara templates och deployments.',
+  },
+  {
+    title: 'Charts och values',
+    details:
+      'Helm charts samlar templates medan values.yaml används för att styra konfiguration mellan miljöer.',
+  },
+  {
+    title: 'Helm workflow',
+    details:
+      'Du skapar ett chart, justerar values och installerar eller uppgraderar med helm install och helm upgrade.',
+  },
+  {
+    title: 'GitOps',
+    details:
+      'GitOps gör Git till source of truth för både applikationer och infrastruktur, så förändringar sker via commits.',
+  },
+  {
+    title: 'Argo CD',
+    details:
+      'Argo CD övervakar Git och synkar automatiskt klustret så att state alltid matchar repot.',
+  },
+  {
+    title: 'Best practices',
+    details:
+      'Det är viktigt att hålla manifests i Git, separera miljöer och följa upp sync-status och deployment-status.',
+  },
+  {
+    title: 'Labbflöde',
+    details:
+      'Lektion 6 avslutas med ett workflow där du kopplar source code, Docker, manifests, Helm och Argo CD ihop till en modern leveranskedja.',
+  },
+]
+
+export const lesson6Exercises: Exercise[] = [
+  {
+    id: 'helm-chart-basics',
+    title: 'Skapa ett Helm chart',
+    goal: 'Förstå hur ett chart paketerar Kubernetes-konfiguration.',
+    prompt:
+      'Skapa ett Helm chart för en enkel app och förklara hur templates och values hjälper dig att återanvända manifest.',
+    steps: [
+      'Kör `helm create my-app` eller gå igenom ett befintligt chart.',
+      'Läs igenom templates och `values.yaml`.',
+      'Anpassa namngivning, image och resurser.',
+      'Installera chartet och kontrollera resultatet.',
+    ],
+    example: [
+      'Helm gör det lättare att återanvända samma struktur i flera miljöer.',
+      'Values fungerar som parametrar till templates.',
+    ],
+    expected: [
+      'Du ska förstå att chartet är en mall för Kubernetes-resurser.',
+      'Du ska kunna se hur values påverkar det som skapas.',
+    ],
+    answer: [
+      'Facit: ett Helm chart paketerar resurser som templates och använder values för variation.',
+      'Facit: det gör att du kan återanvända samma app i flera miljöer med olika inställningar.',
+    ],
+    mistakes: [
+      'Du blandar ihop chart med en enskild YAML-fil.',
+      'Du ändrar templates utan att förstå vilka values som matar dem.',
+      'Du tror att Helm ersätter Kubernetes i stället för att bygga ovanpå det.',
+    ],
+    quiz: [
+      {
+        question: 'Vad är Helm?',
+        options: [
+          'Paketmanager för Kubernetes',
+          'Ett registry',
+          'En typ av service',
+          'En pod probe',
+        ],
+        answer: 'Paketmanager för Kubernetes',
+      },
+      {
+        question: 'Vad används values.yaml till?',
+        options: [
+          'Att styra konfiguration i chartet',
+          'Att lagra loggar',
+          'Att skapa namespaces',
+          'Att mounta volumes',
+        ],
+        answer: 'Att styra konfiguration i chartet',
+      },
+    ],
+  },
+  {
+    id: 'helm-install-upgrade',
+    title: 'Installera och uppgradera ett chart',
+    goal: 'Bli bekväm med Helm-flödet i praktiken.',
+    prompt:
+      'Installera ett chart och gör sedan en uppgradering när du ändrar values eller template-konfiguration.',
+    steps: [
+      'Skapa eller välj ett chart.',
+      'Installera med `helm install`.',
+      'Ändra något i values eller chartet.',
+      'Kör `helm upgrade` och verifiera att ändringen slår igenom.',
+    ],
+    example: [
+      'Helm install används för första utplacering.',
+      'Helm upgrade används när du vill ändra något utan att bygga om allt från början.',
+    ],
+    expected: [
+      'Du ska förstå skillnaden mellan install och upgrade.',
+      'Du ska kunna tänka på versionering av samma release.',
+    ],
+    answer: [
+      'Facit: install skapar en release, upgrade ändrar samma release med nya värden.',
+      'Facit: det är ett enkelt sätt att hålla deployment-ändringar spårbara.',
+    ],
+    mistakes: [
+      'Du kör install igen i stället för upgrade.',
+      'Du glömmer att kontrollera vilken release du ändrar.',
+      'Du blandar ihop chart och release.',
+    ],
+    quiz: [
+      {
+        question: 'Vad gör `helm install`?',
+        options: [
+          'Skapar en ny release',
+          'Tar bort ett chart',
+          'Skapar en secret',
+          'Synkar Git med klustret',
+        ],
+        answer: 'Skapar en ny release',
+      },
+      {
+        question: 'Vad gör `helm upgrade`?',
+        options: [
+          'Uppdaterar en befintlig release',
+          'Bygger en Docker image',
+          'Skapar ett namespace',
+          'Läser pod-loggar',
+        ],
+        answer: 'Uppdaterar en befintlig release',
+      },
+    ],
+  },
+  {
+    id: 'gitops-flow',
+    title: 'Beskriv GitOps-flödet',
+    goal: 'Förstå hur Git blir source of truth.',
+    prompt:
+      'Beskriv GitOps-flödet från commit till cluster state och förklara varför det är lättare att spåra ändringar.',
+    steps: [
+      'Skriv ner vad som ligger i Git och vad som ligger i klustret.',
+      'Beskriv hur ändringar görs via commits i stället för manuella klick.',
+      'Förklara hur en automatisk synk håller state uppdaterat.',
+    ],
+    example: [
+      'GitOps gör rollback enklare eftersom historiken finns i Git.',
+      'Det är också lättare att förstå vad som faktiskt körs.',
+    ],
+    expected: [
+      'Du ska kunna förklara vad source of truth betyder.',
+      'Du ska förstå att GitOps handlar om deklarativ drift.',
+    ],
+    answer: [
+      'Facit: Git är källan till sanningen och klustret synkas mot det som ligger där.',
+      'Facit: det gör förändringar mer spårbara och enklare att återställa.',
+    ],
+    mistakes: [
+      'Du gör manuella ändringar direkt i klustret utan att uppdatera Git.',
+      'Du tror att GitOps är samma sak som ett vanligt deploy-script.',
+      'Du glömmer att historiken i Git är en stor del av nyttan.',
+    ],
+    quiz: [
+      {
+        question: 'Vad är source of truth i GitOps?',
+        options: ['Git-repot', 'Podden', 'Ingressen', 'PV:n'],
+        answer: 'Git-repot',
+      },
+      {
+        question: 'Vad är en stor fördel med GitOps?',
+        options: [
+          'Lätt rollback via Git-historik',
+          'Snabbare docker build',
+          'Automatisk image tagging',
+          'Mindre behov av namespaces',
+        ],
+        answer: 'Lätt rollback via Git-historik',
+      },
+    ],
+  },
+  {
+    id: 'argocd-sync',
+    title: 'Synka klustret med Argo CD',
+    goal: 'Se hur Argo CD automatiserar synk mellan Git och Kubernetes.',
+    prompt:
+      'Beskriv Argo CD:s roll och hur den håller cluster state i sync med Git. Förklara även vad drift betyder.',
+    steps: [
+      'Identifiera Git-repot som ska övervakas.',
+      'Skapa eller välj en Argo CD application.',
+      'Kontrollera sync-status och drift-status.',
+      'Beskriv vad som händer när Git ändras.',
+    ],
+    example: [
+      'Argo CD upptäcker config drift och kan synka tillbaka klustret.',
+      'Web UI:t är bra för att se vilka appar som är i sync.',
+    ],
+    expected: [
+      'Du ska förstå att Argo CD jämför Git med klustret.',
+      'Du ska kunna förklara drift och synk i enkla ord.',
+    ],
+    answer: [
+      'Facit: Argo CD övervakar Git och ser till att klustret matchar det som ligger där.',
+      'Facit: om klustret avviker kan Argo CD upptäcka drift och korrigera det.',
+    ],
+    mistakes: [
+      'Du tror att Argo CD bygger images.',
+      'Du blandar ihop Argo CD med Helm.',
+      'Du tror att synk sker utan att Git är källan.',
+    ],
+    quiz: [
+      {
+        question: 'Vad gör Argo CD?',
+        options: [
+          'Synkar Kubernetes med Git',
+          'Bygger Docker images',
+          'Lagrar volumes',
+          'Skapar secrets',
+        ],
+        answer: 'Synkar Kubernetes med Git',
+      },
+      {
+        question: 'Vad betyder drift i GitOps-sammanhang?',
+        options: [
+          'Att klustret avviker från Git',
+          'Att image saknas i registry',
+          'Att podden körs i bakgrunden',
+          'Att namespace saknar namn',
+        ],
+        answer: 'Att klustret avviker från Git',
+      },
+    ],
+  },
+  {
+    id: 'helm-gitops-argocd-flow',
+    title: 'Knyt ihop Helm, GitOps och Argo CD',
+    goal: 'Se hela leveranskedjan från kod till kluster.',
+    prompt:
+      'Beskriv hela flödet från source code till Helm chart till GitOps till Argo CD och vidare till Kubernetes.',
+    steps: [
+      'Börja med appens source code och bygg den till en image.',
+      'Peka manifests eller Helm chart mot den färdiga imagen.',
+      'Lägg konfigurationen i Git.',
+      'Låt Argo CD synka det som ligger i Git till klustret.',
+    ],
+    example: [
+      'Det här är “röda tråden” i modern Kubernetes delivery.',
+      'Varje steg har ett tydligt ansvar i flödet.',
+    ],
+    expected: [
+      'Du ska kunna förklara hur delarna kompletterar varandra.',
+      'Du ska förstå varför det blir enklare att hantera miljöer med detta arbetssätt.',
+    ],
+    answer: [
+      'Facit: Helm paketerar, GitOps styr via Git och Argo CD synkar automatiskt till klustret.',
+      'Facit: tillsammans ger de en tydlig och spårbar leveranspipeline.',
+    ],
+    mistakes: [
+      'Du blandar ihop vem som gör vad i kedjan.',
+      'Du tror att Argo CD ersätter Git.',
+      'Du glömmer att Helm fortfarande bara är en del av flödet.',
+    ],
+    quiz: [
+      {
+        question: 'Vad gör Helm i flödet?',
+        options: [
+          'Paketerar Kubernetes-konfiguration',
+          'Synkar Git med klustret',
+          'Bygger images',
+          'Skapar namespaces',
+        ],
+        answer: 'Paketerar Kubernetes-konfiguration',
+      },
+      {
+        question: 'Vad gör Argo CD i flödet?',
+        options: [
+          'Synkar klustret med Git',
+          'Bygger Docker images',
+          'Skapar volymer',
+          'Skapar ingress controllers',
+        ],
+        answer: 'Synkar klustret med Git',
+      },
+    ],
+  },
+  {
+    id: 'helm-values-environments',
+    title: 'Anpassa values per miljö',
+    goal: 'Lära dig hur samma chart kan användas i flera miljöer.',
+    prompt:
+      'Kör ett chart med olika values för dev och prod och förklara hur det hjälper dig att återanvända samma manifests med olika inställningar.',
+    steps: [
+      'Utgå från samma chart men skapa två values-filer, till exempel `values-dev.yaml` och `values-prod.yaml`.',
+      'Kör `helm template` eller `helm install` med `-f values-dev.yaml` och jämför med `-f values-prod.yaml`.',
+      'Titta på hur image-tag, replicas och resurser ändras mellan miljöerna.',
+    ],
+    example: [
+      'Ett dev-läge kan ha färre repliker och enklare resurser.',
+      'Ett prod-läge kan använda en mer låst image-tag och fler repliker.',
+      'Samma chart återanvänds, men värdena byts ut per miljö.',
+    ],
+    expected: [
+      'Du ska förstå att values är det som gör chartet flexibelt mellan miljöer.',
+      'Du ska kunna förklara varför man inte vill kopiera hela chartet för varje miljö.',
+    ],
+    answer: [
+      'Facit: samma chart kan köras med olika values-filer för att passa olika miljöer.',
+      'Facit: det är vanligare att ändra values än att duplicera templates.',
+      'Facit: dev och prod behöver ofta olika antal repliker, resurser eller image-taggar.',
+    ],
+    mistakes: [
+      'Du ändrar direkt i templaten för varje miljö i stället för att använda values.',
+      'Du tror att `values.yaml` bara är en extra textfil och inte en del av Helm-flödet.',
+      'Du blandar ihop värden som ska skilja mellan miljöer med sådant som ska vara gemensamt.',
+    ],
+    quiz: [
+      {
+        question: 'Vad används values-filer till i Helm?',
+        options: [
+          'Att ändra konfiguration per miljö',
+          'Att bygga Docker images',
+          'Att skapa namespaces automatiskt',
+          'Att läsa containerloggar',
+        ],
+        answer: 'Att ändra konfiguration per miljö',
+      },
+      {
+        question: 'Varför är values-filer användbara?',
+        options: [
+          'De låter dig återanvända samma chart med olika inställningar',
+          'De ersätter behovet av Kubernetes',
+          'De skapar pods utan YAML',
+          'De pushar manifests till registry',
+        ],
+        answer: 'De låter dig återanvända samma chart med olika inställningar',
+      },
+    ],
+  },
+  {
+    id: 'argocd-drift-check',
+    title: 'Hitta och rätta drift i Argo CD',
+    goal: 'Förstå hur Argo CD upptäcker att klustret inte längre matchar Git.',
+    prompt:
+      'Beskriv hur du ser drift i Argo CD och vad du gör för att synka tillbaka klustret till det som ligger i Git.',
+    steps: [
+      'Öppna en Argo CD application och titta på sync-status och health-status.',
+      'Tänk dig att någon gjort en manuell ändring direkt i klustret.',
+      'Förklara hur Argo CD märker att klustret avviker från Git.',
+      'Beskriv hur du skulle synca eller återställa önskat läge igen.',
+    ],
+    example: [
+      'Om någon ändrar en deployment direkt i klustret kan den börja avvika från Git.',
+      'Argo CD visar då att appen inte längre är i sync.',
+      'När du syncar igen dras klustret tillbaka till det som ligger i repo:t.',
+    ],
+    expected: [
+      'Du ska kunna förklara vad drift betyder i GitOps.',
+      'Du ska förstå att Argo CD jämför Git mot klustret och markerar skillnader.',
+    ],
+    answer: [
+      'Facit: drift betyder att klustret inte längre matchar det deklarerade läget i Git.',
+      'Facit: Argo CD kan visa att appen är out of sync och sedan synka tillbaka den.',
+      'Facit: om du vill undvika drift ska ändringar göras via Git i stället för manuellt i klustret.',
+    ],
+    mistakes: [
+      'Du tror att drift är samma sak som ett fel i själva appen.',
+      'Du ändrar manuellt i klustret och glömmer att uppdatera Git.',
+      'Du blandar ihop sync-status och health-status i Argo CD.',
+    ],
+    quiz: [
+      {
+        question: 'Vad betyder drift i GitOps?',
+        options: [
+          'Att klustret inte längre matchar Git',
+          'Att Helm-charten är trasig',
+          'Att image-taggen är för lång',
+          'Att namespace saknar rätt namn',
+        ],
+        answer: 'Att klustret inte längre matchar Git',
+      },
+      {
+        question: 'Vad gör Argo CD när det upptäcker drift?',
+        options: [
+          'Visar att appen är out of sync och kan synka tillbaka',
+          'Bygger en ny Docker image automatiskt',
+          'Tar bort alla pods direkt',
+          'Skapar nya secrets i klustret',
+        ],
+        answer: 'Visar att appen är out of sync och kan synka tillbaka',
+      },
+    ],
+  },
+  {
+    id: 'helm-template-preview',
+    title: 'Förhandsgranska ett chart med helm template',
+    goal: 'Se hur chartet renderas innan du installerar det.',
+    prompt:
+      'Kör `helm template` på ett chart och förklara varför det är bra att kunna se de renderade YAML-filerna innan du installerar något.',
+    steps: [
+      'Välj ett chart och kör `helm template` i terminalen.',
+      'Lägg gärna till en values-fil eller `--set` för att testa hur outputen ändras.',
+      'Läs igenom den renderade YAML:en och jämför med templaten i chartet.',
+    ],
+    example: [
+      '`helm template` är bra när du vill felsöka utan att skapa resurser i klustret.',
+      'Det hjälper dig att se exakt vilken YAML som Helm kommer att skicka vidare.',
+    ],
+    expected: [
+      'Du ska förstå att templating sker innan installationen.',
+      'Du ska kunna förklara varför förhandsgranskning är nyttig vid felsökning.',
+    ],
+    answer: [
+      'Facit: `helm template` renderar chartet till YAML utan att installera det.',
+      'Facit: det är ett tryggt sätt att kontrollera resultatet innan du kör `helm install`.',
+    ],
+    mistakes: [
+      'Du tror att `helm template` skapar resurser i klustret.',
+      'Du tittar bara på templaten och glömmer att kontrollera den renderade outputen.',
+      'Du blandar ihop rendering och installation.',
+    ],
+    quiz: [
+      {
+        question: 'Vad gör `helm template`?',
+        options: [
+          'Renderar chartet till YAML utan att installera det',
+          'Installerar en ny release direkt',
+          'Synkar Git med klustret',
+          'Skapar en pod från Dockerfile',
+        ],
+        answer: 'Renderar chartet till YAML utan att installera det',
+      },
+      {
+        question: 'Varför är `helm template` användbart?',
+        options: [
+          'Det låter dig kontrollera output innan installation',
+          'Det ersätter Kubernetes service discovery',
+          'Det bygger images snabbare',
+          'Det skapar volumes automatiskt',
+        ],
+        answer: 'Det låter dig kontrollera output innan installation',
+      },
+    ],
+  },
+]
+
+export const lesson6Flashcards: Flashcard[] = [
+  {
+    tag: 'Helm',
+    question: 'Vad är Helm?',
+    answer: 'Paketmanager för Kubernetes.',
+    options: [
+      'Paketmanager för Kubernetes.',
+      'En service typ.',
+      'Ett registry.',
+      'En container runtime.',
+    ],
+  },
+  {
+    tag: 'Helm',
+    question: 'Vad används values.yaml till?',
+    answer: 'Att styra konfiguration i chartet.',
+    options: [
+      'Att styra konfiguration i chartet.',
+      'Att skriva loggar.',
+      'Att skapa pods.',
+      'Att skapa namespaces.',
+    ],
+  },
+  {
+    tag: 'Helm',
+    question: 'Vad är en Helm release?',
+    answer: 'En installerad instans av ett chart i klustret.',
+    options: [
+      'En installerad instans av ett chart i klustret.',
+      'En ny Docker image.',
+      'En typ av Kubernetes service.',
+      'En loggfil från Argo CD.',
+    ],
+  },
+  {
+    tag: 'Helm',
+    question: 'Vad gör `helm template`?',
+    answer: 'Renderar chartet till YAML utan att installera något.',
+    options: [
+      'Renderar chartet till YAML utan att installera något.',
+      'Installerar en ny release direkt.',
+      'Tar bort en release från klustret.',
+      'Synkar Git med klustret.',
+    ],
+  },
+  {
+    tag: 'GitOps',
+    question: 'Vad är GitOps?',
+    answer: 'Att använda Git som source of truth för drift.',
+    options: [
+      'Att använda Git som source of truth för drift.',
+      'Att bygga images i GitHub.',
+      'Att skapa services automatiskt.',
+      'Att mounta secrets i pods.',
+    ],
+  },
+  {
+    tag: 'ArgoCD',
+    question: 'Vad gör Argo CD?',
+    answer: 'Synkar klustret med Git och upptäcker drift.',
+    options: [
+      'Synkar klustret med Git och upptäcker drift.',
+      'Bygger Docker images.',
+      'Skapar PersistentVolumes.',
+      'Tar bort namespaces.',
+    ],
+  },
+  {
+    tag: 'GitOps',
+    question: 'Vad betyder drift i GitOps?',
+    answer: 'Att klustret inte längre matchar Git.',
+    options: [
+      'Att klustret inte längre matchar Git.',
+      'Att Helm-charten inte går att installera.',
+      'Att podden kör för många containers.',
+      'Att image-taggen saknas i Dockerfile.',
+    ],
+  },
+  {
+    tag: 'Workflow',
+    question: 'Varför är values-filer användbara?',
+    answer: 'De låter samma chart anpassas för olika miljöer.',
+    options: [
+      'De låter samma chart anpassas för olika miljöer.',
+      'De gör att Docker image inte behöver byggas.',
+      'De ersätter manifests helt.',
+      'De skapar en ny namespace automatiskt.',
+    ],
+  },
+  {
+    tag: 'Workflow',
+    question: 'Vad gör `helm upgrade`?',
+    answer: 'Uppdaterar en befintlig release.',
+    options: [
+      'Uppdaterar en befintlig release.',
+      'Skapar en ny namespace.',
+      'Skapar en pod direkt.',
+      'Pushar till registry.',
+    ],
+  },
+  {
+    tag: 'Drift',
+    question: 'Vad betyder drift i GitOps?',
+    answer: 'Att klustret inte längre matchar Git.',
+    options: [
+      'Att klustret inte längre matchar Git.',
+      'Att image-taggen är fel.',
+      'Att volymen är för liten.',
+      'Att ingress saknar host.',
+    ],
+  },
+  {
+    tag: 'Best practice',
+    question: 'Varför hålla manifests i Git?',
+    answer: 'För att få versionering, auditability och enkel rollback.',
+    options: [
+      'För att få versionering, auditability och enkel rollback.',
+      'För att göra images mindre.',
+      'För att slippa namespaces.',
+      'För att ersätta Kubernetes.',
+    ],
+  },
+  {
+    tag: 'Helm + GitOps',
+    question: 'Hur hänger Helm och Argo CD ihop?',
+    answer: 'Helm paketerar resurser och Argo CD synkar dem till klustret.',
+    options: [
+      'Helm paketerar resurser och Argo CD synkar dem till klustret.',
+      'De är samma sak.',
+      'Argo CD bygger images åt Helm.',
+      'Helm ersätter Git.',
+    ],
+  },
+]
+
 export const lesson3Flashcards: Flashcard[] = [
   {
     tag: 'Kluster',
@@ -2237,6 +2826,7 @@ export const allFlashcards: Flashcard[] = [
   ...lesson3Flashcards,
   ...lesson4Flashcards,
   ...lesson5Flashcards,
+  ...lesson6Flashcards,
 ]
 
 export const lesson1Exercises: Exercise[] = [
@@ -2859,6 +3449,15 @@ export const lesson1Exercises: Exercise[] = [
       },
     ],
   },
+]
+
+export const allExercises = [
+  ...lesson1Exercises.map((exercise) => ({ lessonId: 1, lessonTitle: 'Lektion 1', exercise })),
+  ...lesson2Exercises.map((exercise) => ({ lessonId: 2, lessonTitle: 'Lektion 2', exercise })),
+  ...lesson3Exercises.map((exercise) => ({ lessonId: 3, lessonTitle: 'Lektion 3', exercise })),
+  ...lesson4Exercises.map((exercise) => ({ lessonId: 4, lessonTitle: 'Lektion 4', exercise })),
+  ...lesson5Exercises.map((exercise) => ({ lessonId: 5, lessonTitle: 'Lektion 5', exercise })),
+  ...lesson6Exercises.map((exercise) => ({ lessonId: 6, lessonTitle: 'Lektion 6', exercise })),
 ]
 
 export const courseFlashcards: Flashcard[] = [

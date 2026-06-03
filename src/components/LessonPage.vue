@@ -9,6 +9,7 @@ import {
   lesson3Topics,
   lesson4Topics,
   lesson5Topics,
+  lesson6Topics,
 } from '../data/course'
 
 const route = useRoute()
@@ -21,12 +22,14 @@ const isLesson2 = computed(() => lessonId.value === 2)
 const isLesson3 = computed(() => lessonId.value === 3)
 const isLesson4 = computed(() => lessonId.value === 4)
 const isLesson5 = computed(() => lessonId.value === 5)
+const isLesson6 = computed(() => lessonId.value === 6)
 const topics = computed(() => {
   if (isLesson1.value) return lesson1Topics
   if (isLesson2.value) return lesson2Topics
   if (isLesson3.value) return lesson3Topics
   if (isLesson4.value) return lesson4Topics
   if (isLesson5.value) return lesson5Topics
+  if (isLesson6.value) return lesson6Topics
   return []
 })
 
@@ -81,6 +84,15 @@ const resources = computed(() => {
       },
     ]
   }
+  if (isLesson6.value) {
+    return [
+      {
+        label: 'Day 6.pptx',
+        href: '/lesson-material/Day 6.pptx',
+        description: 'Powerpointen för lektion 6.',
+      },
+    ]
+  }
   return []
 })
 </script>
@@ -113,12 +125,12 @@ const resources = computed(() => {
         <article class="info-card">
           <h3>Status</h3>
           <p>
-            {{ isLesson1 || isLesson2 || isLesson3 || isLesson4 || isLesson5 ? 'Färdig att plugga' : 'Kommer fyllas på' }}
+            {{ isLesson1 || isLesson2 || isLesson3 || isLesson4 || isLesson5 || isLesson6 ? 'Färdig att plugga' : 'Kommer fyllas på' }}
           </p>
         </article>
       </div>
 
-      <div v-if="isLesson1 || isLesson2 || isLesson3 || isLesson4 || isLesson5" class="lesson-summary">
+      <div v-if="isLesson1 || isLesson2 || isLesson3 || isLesson4 || isLesson5 || isLesson6" class="lesson-summary">
         <div class="lesson-resources">
           <div class="section-heading compact">
             <h3>Resurser</h3>

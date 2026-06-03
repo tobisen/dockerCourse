@@ -5,7 +5,7 @@ import { allFlashcards, courseName, lessons } from '../data/course'
 import { shuffleArray } from '../utils/shuffle'
 
 const lessonLabel = computed(() => lessons
-  .filter((lesson) => lesson.id <= 5)
+  .filter((lesson) => lesson.id <= 6)
   .map((lesson) => lesson.title)
   .join(' + '))
 
@@ -67,6 +67,7 @@ function resetChoice() {
         <div class="lesson-action-row">
           <RouterLink to="/" class="page-link-button">Till startsidan</RouterLink>
           <RouterLink to="/lektion/1" class="page-link-button">Till lektion 1</RouterLink>
+          <RouterLink to="/ovningar" class="page-link-button">Till övningar</RouterLink>
         </div>
         <h2>Alla flashcards</h2>
         <p>
@@ -122,7 +123,7 @@ function resetChoice() {
           <div class="section-heading compact">
             <h3>Vad du tränar på</h3>
             <p>
-              Det här setet samlar flashcards från lektion 1 till 3 i en gemensam kortlek.
+              Det här setet samlar flashcards från lektion 1 till 6 i en gemensam kortlek.
             </p>
           </div>
 

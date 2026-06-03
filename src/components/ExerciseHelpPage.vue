@@ -8,6 +8,7 @@ import {
   lesson3Exercises,
   lesson4Exercises,
   lesson5Exercises,
+  lesson6Exercises,
   lessons,
 } from '../data/course'
 import { shuffleArray } from '../utils/shuffle'
@@ -22,12 +23,14 @@ const isLesson2 = computed(() => lessonId.value === 2)
 const isLesson3 = computed(() => lessonId.value === 3)
 const isLesson4 = computed(() => lessonId.value === 4)
 const isLesson5 = computed(() => lessonId.value === 5)
+const isLesson6 = computed(() => lessonId.value === 6)
 const exercises = computed(() => {
   if (isLesson1.value) return lesson1Exercises
   if (isLesson2.value) return lesson2Exercises
   if (isLesson3.value) return lesson3Exercises
   if (isLesson4.value) return lesson4Exercises
   if (isLesson5.value) return lesson5Exercises
+  if (isLesson6.value) return lesson6Exercises
   return []
 })
 const exercise = computed(() => exercises.value.find((item) => item.id === exerciseId.value))
@@ -84,7 +87,7 @@ const correctCount = computed(() =>
         <p>{{ lesson?.title ?? `Lektion ${lessonId}` }}</p>
       </div>
 
-      <article v-if="(isLesson1 || isLesson2 || isLesson3 || isLesson4 || isLesson5) && exercise" class="exercise-help">
+      <article v-if="(isLesson1 || isLesson2 || isLesson3 || isLesson4 || isLesson5 || isLesson6) && exercise" class="exercise-help">
         <div class="exercise-help-card">
           <p class="eyebrow">Uppgift</p>
           <h3>{{ exercise.title }}</h3>

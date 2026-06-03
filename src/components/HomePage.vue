@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
-import { allFlashcards, courseName, lessons } from '../data/course'
+import { allExercises, allFlashcards, courseName, lessons } from '../data/course'
 </script>
 
 <template>
@@ -15,14 +15,25 @@ import { allFlashcards, courseName, lessons } from '../data/course'
         <h2>Lektioner</h2>
       </div>
 
-      <RouterLink to="/flashcards" class="lesson-card lesson-link featured-set">
-        <div class="lesson-badge">Flashcards</div>
-        <h3>Alla flashcards</h3>
-        <p>
-          Ett samlat set med alla flashcards vi har just nu från lektion 1 till 3.
-        </p>
-        <strong>{{ allFlashcards.length }} kort i ett set</strong>
-      </RouterLink>
+      <div class="lesson-overview featured-overview">
+        <RouterLink to="/flashcards" class="lesson-card lesson-link featured-set">
+          <div class="lesson-badge">Flashcards</div>
+          <h3>Alla flashcards</h3>
+          <p>
+            Ett samlat set med alla flashcards vi har just nu från lektion 1 till 6.
+          </p>
+          <strong>{{ allFlashcards.length }} kort i ett set</strong>
+        </RouterLink>
+
+        <RouterLink to="/ovningar" class="lesson-card lesson-link featured-set">
+          <div class="lesson-badge">Övningar</div>
+          <h3>Alla övningar</h3>
+          <p>
+            En gemensam översikt över alla övningar vi har just nu från lektion 1 till 6.
+          </p>
+          <strong>{{ allExercises.length }} övningar i ett set</strong>
+        </RouterLink>
+      </div>
 
       <div class="lesson-overview">
         <RouterLink
