@@ -33,15 +33,18 @@ const topics = computed(() => {
   return []
 })
 
+const lessonMaterialHref = (fileName: string) =>
+  `${import.meta.env.BASE_URL}lesson-material/${fileName}`
+
 const lesson1Resources = [
   {
     label: 'Day 1 - Docker.pptx',
-    href: '/lesson-material/Day 1 - Docker.pptx',
+    href: lessonMaterialHref('Day 1 - Docker.pptx'),
     description: 'Presentationen från lektion 1.',
   },
   {
     label: 'petclinic-app 1.zip',
-    href: '/lesson-material/petclinic-app 1.zip',
+    href: lessonMaterialHref('petclinic-app 1.zip'),
     description: 'Källkod och exempelprojekt för övningarna.',
   },
 ]
@@ -49,7 +52,7 @@ const lesson1Resources = [
 const lesson2Resources = [
   {
     label: 'Day 2 - Docker.pptx',
-    href: '/lesson-material/Day 2 - Docker.pptx',
+    href: lessonMaterialHref('Day 2 - Docker.pptx'),
     description: 'Powerpointen för lektion 2.',
   },
 ]
@@ -61,7 +64,7 @@ const resources = computed(() => {
     return [
       {
         label: 'Day 3 - Docker.pptx',
-        href: '/lesson-material/Day 3 - Docker.pptx',
+        href: lessonMaterialHref('Day 3 - Docker.pptx'),
         description: 'Powerpointen för lektion 3.',
       },
     ]
@@ -70,7 +73,7 @@ const resources = computed(() => {
     return [
       {
         label: 'Day 4.pptx',
-        href: '/lesson-material/Day 4.pptx',
+        href: lessonMaterialHref('Day 4.pptx'),
         description: 'Powerpointen för lektion 4.',
       },
     ]
@@ -79,7 +82,7 @@ const resources = computed(() => {
     return [
       {
         label: 'Day 5.pptx',
-        href: '/lesson-material/Day 5.pptx',
+        href: lessonMaterialHref('Day 5.pptx'),
         description: 'Powerpointen för lektion 5.',
       },
     ]
@@ -88,7 +91,7 @@ const resources = computed(() => {
     return [
       {
         label: 'Day 6.pptx',
-        href: '/lesson-material/Day 6.pptx',
+        href: lessonMaterialHref('Day 6.pptx'),
         description: 'Powerpointen för lektion 6.',
       },
     ]
